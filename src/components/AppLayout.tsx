@@ -14,12 +14,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const handleAccountClick = async () => {
     if (isAuthenticated) {
-      // Show logout confirmation or dropdown
-      try {
-        await logout();
-        router.push("/");
-      } catch (error) {
-        console.error("Logout failed:", error);
+      // If already in library, show logout option
+      // Otherwise redirect to library
+      const path = window.location.pathname;
+      if (path === "/library") {
+        // Show logout confirmation
+        try {
+          await logout();
+          router.push("/");
+        } catch (error) {
+          console.error("Logout failed:", error);
+        }
+      } else {
+        // Redirect to library
+        router.push("/library");
       }
     } else {
       // Show auth dialog if not authenticated

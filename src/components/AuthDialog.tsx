@@ -11,13 +11,9 @@ interface AuthDialogProps {
   onClose: () => void;
 }
 
-type AuthMode = "magic-link" | "password";
-
 export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
-  const { sendMagicLink, login, isLoading, magicLinkSent } = useAuth();
-  const [mode, setMode] = useState<AuthMode>("magic-link");
+  const { sendMagicLink, isLoading, magicLinkSent } = useAuth();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleMagicLink = async (e: React.FormEvent) => {
@@ -37,30 +33,8 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
     }
   };
 
-  const handlePasswordLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    
-    if (!email || !password) {
-      setError("Please fill in all fields");
-      return;
-    }
-
-    try {
-      await login(email, password);
-      onClose();
-      setEmail("");
-      setPassword("");
-      setMode("magic-link");
-    } catch (err: any) {
-      setError(err.message || "Login failed. Please try again.");
-      console.error(err);
-    }
-  };
-
   const handleClose = () => {
     setEmail("");
-    setPassword("");
     setError("");
     onClose();
   };
@@ -141,7 +115,6 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
                     <Button
                       onClick={() => {
                         setEmail("");
-                        setPassword("");
                       }}
                       variant="secondary"
                       fullWidth
@@ -151,205 +124,71 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
                     </Button>
                   </motion.div>
                 ) : (
-                  // Main Auth Form
-                  <motion.div
-                    key="form"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                  // Magic Link Form
+                  <motion.form
+                    key="magic-link-form"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.2 }}
+                    onSubmit={handleMagicLink}
                     className="space-y-4"
                   >
-                    {/* Mode Tabs */}
+                    {/* Email Field */}
                     <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.1 }}
-                      className="flex gap-2 mb-4 bg-white/5 p-1 rounded-xl"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15 }}
                     >
-                      <motion.button
-                        onClick={() => {
-                          setMode("magic-link");
-                          setError("");
-                          setPassword("");
-                        }}
-                        className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 ${
-                          mode === "magic-link"
-                            ? "bg-gradient-to-r from-electric-purple to-electric-cyan text-white shadow-glow"
-                            : "text-white/70 hover:text-white"
-                        }`}
-                      >
-                        Magic Link
-                      </motion.button>
-                      <motion.button
-                        onClick={() => {
-                          setMode("password");
-                          setError("");
-                        }}
-                        className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 ${
-                          mode === "password"
-                            ? "bg-gradient-to-r from-electric-purple to-electric-cyan text-white shadow-glow"
-                            : "text-white/70 hover:text-white"
-                        }`}
-                      >
-                        Password
-                      </motion.button>
+                      <label className="block text-sm font-medium text-white mb-2">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="you@example.com"
+                        className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900 transition-all"
+                      />
                     </motion.div>
 
-                    {/* Forms */}
-                    <AnimatePresence mode="wait">
-                      {mode === "magic-link" ? (
-                        // Magic Link Form
-                        <motion.form
-                          key="magic-link-form"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: 20 }}
-                          transition={{ duration: 0.2 }}
-                          onSubmit={handleMagicLink}
-                          className="space-y-4"
-                        >
-                          {/* Email Field */}
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.15 }}
-                          >
-                            <label className="block text-sm font-medium text-white mb-2">
-                              Email Address
-                            </label>
-                            <input
-                              type="email"
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                              placeholder="you@example.com"
-                              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900 transition-all"
-                            />
-                          </motion.div>
+                    {/* Error Message */}
+                    {error && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="px-4 py-3 rounded-lg bg-red-500/20 border border-red-500/30 text-red-200 text-sm"
+                      >
+                        {error}
+                      </motion.div>
+                    )}
 
-                          {/* Error Message */}
-                          {error && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="px-4 py-3 rounded-lg bg-red-500/20 border border-red-500/30 text-red-200 text-sm"
-                            >
-                              {error}
-                            </motion.div>
-                          )}
+                    {/* Submit Button */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <Button
+                        type="submit"
+                        fullWidth
+                        disabled={isLoading || !email}
+                        variant="primary"
+                      >
+                        {isLoading ? "Sending..." : "Send Magic Link"}
+                      </Button>
+                    </motion.div>
 
-                          {/* Submit Button */}
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                          >
-                            <Button
-                              type="submit"
-                              fullWidth
-                              disabled={isLoading || !email}
-                              variant="primary"
-                            >
-                              {isLoading ? "Sending..." : "Send Magic Link"}
-                            </Button>
-                          </motion.div>
-
-                          {/* Info */}
-                          <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.25 }}
-                            className="text-xs text-white/50 text-center"
-                          >
-                            ✨ A magic link will be sent to your email - no password needed!
-                          </motion.p>
-                        </motion.form>
-                      ) : (
-                        // Password Form
-                        <motion.form
-                          key="password-form"
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -20 }}
-                          transition={{ duration: 0.2 }}
-                          onSubmit={handlePasswordLogin}
-                          className="space-y-4"
-                        >
-                          {/* Email Field */}
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.15 }}
-                          >
-                            <label className="block text-sm font-medium text-white mb-2">
-                              Email
-                            </label>
-                            <input
-                              type="email"
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                              placeholder="you@example.com"
-                              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900 transition-all"
-                            />
-                          </motion.div>
-
-                          {/* Password Field */}
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                          >
-                            <label className="block text-sm font-medium text-white mb-2">
-                              Password
-                            </label>
-                            <input
-                              type="password"
-                              value={password}
-                              onChange={(e) => setPassword(e.target.value)}
-                              placeholder="••••••••"
-                              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900 transition-all"
-                            />
-                          </motion.div>
-
-                          {/* Error Message */}
-                          {error && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="px-4 py-3 rounded-lg bg-red-500/20 border border-red-500/30 text-red-200 text-sm"
-                            >
-                              {error}
-                            </motion.div>
-                          )}
-
-                          {/* Submit Button */}
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.25 }}
-                          >
-                            <Button
-                              type="submit"
-                              fullWidth
-                              disabled={isLoading}
-                              variant="primary"
-                            >
-                              {isLoading ? "Signing in..." : "Sign In"}
-                            </Button>
-                          </motion.div>
-
-                          {/* Info */}
-                          <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                            className="text-xs text-white/50 text-center"
-                          >
-                            Don't have an account? Use magic link to create one instantly!
-                          </motion.p>
-                        </motion.form>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
+                    {/* Info */}
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.25 }}
+                      className="text-xs text-white/50 text-center"
+                    >
+                      ✨ A magic link will be sent to your email - no password needed!
+                    </motion.p>
+                  </motion.form>
                 )}
               </AnimatePresence>
             </div>

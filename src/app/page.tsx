@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Recorder from "@/components/Recorder";
 import ProgressSteps from "@/components/ProgressSteps";
@@ -14,8 +13,6 @@ type Step = "record" | "generating" | "complete";
 type PipelineStep = "transcribe" | "story" | "video" | "ready";
 
 export default function HomePage() {
-  const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
   const [step, setStep] = useState<Step>("record");
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [dreamId, setDreamId] = useState<string | null>(null);
@@ -27,13 +24,7 @@ export default function HomePage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoContainerRef = useRef<HTMLDivElement>(null);
 
-  // Redirect to library if user is authenticated
-  useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      console.log("👤 User authenticated on home page, redirecting to library");
-      router.push("/library");
-    }
-  }, [isAuthenticated, isLoading, router]);
+  const { isAuthenticated, isLoading } = useAuth();
 
   const handleRecordingComplete = async (blob: Blob) => {
     setAudioBlob(blob);
