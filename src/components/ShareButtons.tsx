@@ -107,78 +107,120 @@ export default function ShareButtons({
     lg: "text-base",
   };
 
-  // Enhanced Instagram sharing
+  // Enhanced Instagram sharing - Stories and Posts
   const handleInstagramShare = onInstagram || (async () => {
     const shareText = `${dreamTitle}\n\n${defaultShareUrl}`;
     
-    // Strategy 1: Try to share video file directly (mobile with video)
+    // Strategy 1: Instagram Stories (Mobile with video URL)
     if (videoUrl && isMobile()) {
-      const shared = await shareVideoFile("Instagram");
-      if (shared) return; // Success! User can now select Instagram from share sheet
+      try {
+        // For mobile, try Instagram Stories intent
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        
+        if (isIOS || isAndroid) {
+          // Copy caption for user to paste
+          await navigator.clipboard.writeText(shareText);
+          
+          // Try to open Instagram app directly to camera/story
+          window.location.href = "instagram://story-camera";
+          
+          // Show instructions
+          setTimeout(() => {
+            alert("📸 Instagram opened!\n\n1. Upload your video\n2. Paste caption from clipboard\n3. Share to Story or Post");
+          }, 500);
+          
+          return;
+        }
+      } catch (error) {
+        console.log("Instagram app link failed, trying alternative");
+      }
     }
     
-    // Strategy 2: Download video + copy caption (desktop with video)
+    // Strategy 2: Download video + copy caption (Desktop with video)
     if (videoUrl && !isMobile()) {
       const downloaded = await downloadVideo();
       if (downloaded) {
         await navigator.clipboard.writeText(shareText);
-        alert("✅ Video downloaded!\n📋 Caption copied!\n\n👉 Open Instagram and create a new post/reel with the downloaded video.");
+        alert("✅ Video downloaded!\n📋 Caption copied!\n\n📸 Next steps:\n1. Open Instagram\n2. Create new Reel or Post\n3. Upload the downloaded video\n4. Paste caption");
         window.open("https://www.instagram.com/", "_blank");
         return;
       }
     }
     
-    // Strategy 3: Mobile fallback - copy text and guide
+    // Strategy 3: Mobile without video - direct to Instagram
     if (isMobile()) {
       await navigator.clipboard.writeText(shareText);
-      window.location.href = "instagram://share";
+      // Try to open Instagram to post creation
+      window.location.href = "instagram://library?AssetPath=";
       setTimeout(() => {
         window.open("https://www.instagram.com/", "_blank");
       }, 1000);
       return;
     }
     
-    // Strategy 4: Desktop fallback - just copy and open
+    // Strategy 4: Desktop fallback
     await navigator.clipboard.writeText(shareText);
-    alert("📋 Link copied to clipboard!\n\n👉 Paste it in Instagram to share.");
+    alert("📋 Link copied!\n\n👉 Open Instagram and create a post/reel.");
     window.open("https://www.instagram.com/", "_blank");
   });
 
-  // Enhanced TikTok sharing
+  // Enhanced TikTok sharing - Direct to Upload
   const handleTikTokShare = onTikTok || (async () => {
     const shareText = `${dreamTitle}\n${defaultShareUrl}`;
     
-    // Strategy 1: Try to share video file directly (mobile with video)
+    // Strategy 1: TikTok Upload (Mobile with video URL)
     if (videoUrl && isMobile()) {
-      const shared = await shareVideoFile("TikTok");
-      if (shared) return; // Success! User can now select TikTok from share sheet
+      try {
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        
+        if (isIOS || isAndroid) {
+          // Copy caption for user to paste
+          await navigator.clipboard.writeText(shareText);
+          
+          // Try to open TikTok app directly to upload screen
+          // TikTok intent for upload
+          window.location.href = "tiktok://upload";
+          
+          // Show instructions
+          setTimeout(() => {
+            alert("🎵 TikTok opened!\n\n1. Upload your video\n2. Paste caption from clipboard\n3. Add effects and post");
+          }, 500);
+          
+          return;
+        }
+      } catch (error) {
+        console.log("TikTok app link failed, trying alternative");
+      }
     }
     
-    // Strategy 2: Download video + copy caption (desktop with video)
+    // Strategy 2: Download video + copy caption (Desktop with video)
     if (videoUrl && !isMobile()) {
       const downloaded = await downloadVideo();
       if (downloaded) {
         await navigator.clipboard.writeText(shareText);
-        alert("✅ Video downloaded!\n📋 Caption copied!\n\n👉 Open TikTok and create a new post with the downloaded video.");
-        window.open("https://www.tiktok.com/", "_blank");
+        alert("✅ Video downloaded!\n📋 Caption copied!\n\n🎵 Next steps:\n1. Open TikTok\n2. Click + to create\n3. Upload the downloaded video\n4. Paste caption and hashtags");
+        window.open("https://www.tiktok.com/upload", "_blank");
         return;
       }
     }
     
-    // Strategy 3: Mobile fallback - copy text and guide
+    // Strategy 3: Mobile without video - direct to TikTok upload
     if (isMobile()) {
       await navigator.clipboard.writeText(shareText);
-      window.location.href = "tiktok://";
+      // Try to open TikTok to upload screen
+      window.location.href = "tiktok://upload";
       setTimeout(() => {
         window.open("https://www.tiktok.com/", "_blank");
       }, 1000);
       return;
     }
     
-    // Strategy 4: Desktop fallback - just copy and open
+    // Strategy 4: Desktop fallback
     await navigator.clipboard.writeText(shareText);
-    alert("📋 Link copied to clipboard!\n\n👉 Paste it in TikTok to share.");
-    window.open("https://www.tiktok.com/", "_blank");
+    alert("📋 Caption copied!\n\n👉 Open TikTok and upload your video.");
+    window.open("https://www.tiktok.com/upload", "_blank");
   });
 
   // Copy link to clipboard
