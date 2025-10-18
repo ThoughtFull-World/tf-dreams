@@ -206,6 +206,8 @@ export default function SharePage() {
                       onPause={() => setIsPlaying(false)}
                       muted
                       loop
+                      autoplay
+                      preload="auto"
                     />
                     
                     {/* Play button overlay - only show when not playing */}
