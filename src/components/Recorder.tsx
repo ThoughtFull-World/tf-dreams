@@ -9,12 +9,14 @@ interface RecorderProps {
   onRecordingComplete: (blob: Blob) => void;
   showQuickActions?: boolean;
   onRetry?: () => void;
+  onRecordingStart?: () => void;
 }
 
-export default function Recorder({ onRecordingComplete, showQuickActions = false, onRetry }: RecorderProps) {
+export default function Recorder({ onRecordingComplete, showQuickActions = false, onRetry, onRecordingStart }: RecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
+  const [barLevels, setBarLevels] = useState<number[]>(Array(24).fill(0.2));
   const [justFinished, setJustFinished] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -44,8 +46,23 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
     const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
     analyserRef.current.getByteFrequencyData(dataArray);
     
+    // Calculate average for overall audio level
     const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
     setAudioLevel(average / 255);
+
+    // Calculate individual bar levels from different frequency ranges
+    const barCount = 24;
+    const barWidth = Math.floor(dataArray.length / barCount);
+    const newBarLevels = Array.from({ length: barCount }, (_, i) => {
+      const start = i * barWidth;
+      const end = start + barWidth;
+      const slice = dataArray.slice(start, end);
+      const avg = slice.reduce((a, b) => a + b, 0) / slice.length;
+      // Normalize to 0.15-1.0 range for better visual effect
+      return Math.max(0.15, Math.min(1.0, avg / 255));
+    });
+    
+    setBarLevels(newBarLevels);
 
     animationFrameRef.current = requestAnimationFrame(analyzeAudio);
   };
@@ -80,17 +97,22 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
         }
         setAudioLevel(0);
         
-        // Create blob and wait 2s before calling onRecordingComplete
+        // Create blob and wait 3s before calling onRecordingComplete
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
         setTimeout(() => {
           onRecordingComplete(blob);
-        }, 2000);
+        }, 3000);
       };
 
       mediaRecorder.start();
       setIsRecording(true);
       setRecordingTime(0);
       setJustFinished(false);
+
+      // Notify parent that recording has started
+      if (onRecordingStart) {
+        onRecordingStart();
+      }
 
       timerRef.current = setInterval(() => {
         setRecordingTime((prev) => {
@@ -113,6 +135,7 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       setJustFinished(true);
+      setBarLevels(Array(24).fill(0.2)); // Reset bar levels
       
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -215,25 +238,25 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
 
           {/* Progress ring */}
           {isRecording && (
-            <svg className="absolute -inset-3 w-[144px] h-[144px] -rotate-90 pointer-events-none">
+            <svg className="absolute inset-0 w-32 h-32 pointer-events-none" style={{ transform: 'rotate(-90deg)' }}>
               <circle
-                cx="72"
-                cy="72"
-                r="68"
+                cx="64"
+                cy="64"
+                r="62"
                 stroke="rgba(255,255,255,0.1)"
-                strokeWidth="2"
+                strokeWidth="3"
                 fill="none"
               />
               <circle
-                cx="72"
-                cy="72"
-                r="68"
+                cx="64"
+                cy="64"
+                r="62"
                 stroke="url(#gradient)"
-                strokeWidth="2"
+                strokeWidth="3"
                 fill="none"
                 strokeLinecap="round"
-                strokeDasharray={`${2 * Math.PI * 68}`}
-                strokeDashoffset={`${2 * Math.PI * 68 * (1 - progress)}`}
+                strokeDasharray={`${2 * Math.PI * 62}`}
+                strokeDashoffset={`${2 * Math.PI * 62 * (1 - progress)}`}
                 style={{ transition: 'stroke-dashoffset 0.3s ease' }}
               />
               <defs>
@@ -283,14 +306,12 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
                 exit={{ opacity: 0, scale: 0.9 }}
               >
                 <p className="text-lg font-semibold text-electric-cyan">
-                  ✓ Recording stopped
+                  Dream Captured
                 </p>
                 <p className="text-sm text-white/60 mt-1">
-                  {recordingTime >= 59 ? "Auto-stopped at 1 minute" : "Ready to process your dream"} 
+                  Bringing your story to life...
                 </p>
-                <p className="text-xs text-white/40 mt-2">
-                  Processing your dream...
-                </p>
+               
               </motion.div>
             ) : (
               <motion.div
@@ -324,54 +345,19 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          {[...Array(24)].map((_, i) => (
+          {barLevels.map((level, i) => (
             <div
               key={i}
-              className="w-1 bg-gradient-to-t from-electric-purple/50 to-electric-cyan/50 rounded-full transition-all duration-100"
+              className="w-1 bg-gradient-to-t from-electric-purple/50 to-electric-cyan/50 rounded-full transition-all duration-75 ease-out"
               style={{
-                height: `${15 + (audioLevel * 85 * (Math.random() * 0.5 + 0.5))}%`,
+                height: `${level * 100}%`,
               }}
             />
           ))}
         </motion.div>
       )}
 
-      {/* Main action button */}
-      <AnimatePresence mode="wait">
-        {isRecording && (
-          <motion.div
-            key="stop"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-            <Button 
-              onClick={stopRecording} 
-              variant="glass" 
-              fullWidth
-            >
-              Create My Dream ✨
-            </Button>
-          </motion.div>
-        )}
-
-        {justFinished && (
-          <motion.div
-            key="finished"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-            <Button 
-              onClick={() => onRecordingComplete(new Blob(chunksRef.current, { type: "audio/webm" }))} 
-              variant="glass" 
-              fullWidth
-            >
-              Create My Dream ✨
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Main action button removed - users tap mic icon to stop */}
 
       {/* Quick retry option - only shows briefly after recording */}
       {showQuickActions && onRetry && (

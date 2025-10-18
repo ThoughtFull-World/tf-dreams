@@ -97,7 +97,7 @@ export default function LibraryPage() {
   }
 
   return (
-    <main className="flex flex-col min-h-screen p-3 sm:p-4 md:p-6 relative z-10 pt-16 sm:pt-20">
+    <main className="flex flex-col min-h-screen p-3 sm:p-4 md:p-6 relative z-10 pt-20 sm:pt-24 md:pt-24">
       <div className="w-full max-w-6xl mx-auto flex-1">
         {/* Header */}
         <motion.div

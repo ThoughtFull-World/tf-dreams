@@ -28,10 +28,30 @@ export default function HomePage() {
   const [showFullscreenControls, setShowFullscreenControls] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showMemoryTip, setShowMemoryTip] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [wordChunkIndex, setWordChunkIndex] = useState(0);
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const { isAuthenticated, isLoading, signInAnonymously } = useAuth();
+
+  // Cycle through word chunks for long transcripts
+  useEffect(() => {
+    if (step === "generating" && transcript) {
+      const words = transcript.split(' ');
+      const chunkSize = 15;
+      const totalChunks = Math.ceil(words.length / chunkSize);
+      
+      // Only cycle if there are multiple chunks
+      if (totalChunks > 1) {
+        const interval = setInterval(() => {
+          setWordChunkIndex((prev) => (prev + 1) % totalChunks);
+        }, 5000); // Change every 5 seconds
+        
+        return () => clearInterval(interval);
+      }
+    }
+  }, [step, transcript]);
 
   // Fetch random background video on mount
   useEffect(() => {
@@ -56,6 +76,8 @@ export default function HomePage() {
 
   const handleRecordingComplete = async (blob: Blob) => {
     setAudioBlob(blob);
+    setWordChunkIndex(0); // Reset word chunk index for new recording
+    setIsRecording(false); // Reset recording state
     
     // Ensure user is authenticated (anonymously if needed)
     if (!isAuthenticated) {
@@ -141,6 +163,7 @@ export default function HomePage() {
     setVideoUrl(null);
     setCurrentPipelineStep("transcribe");
     setShowRetry(false);
+    setIsRecording(false); // Reset recording state for retry
   };
 
   const handleCopyLink = () => {
@@ -330,68 +353,72 @@ export default function HomePage() {
                     onRecordingComplete={handleRecordingComplete}
                     showQuickActions={showRetry}
                     onRetry={handleRetry}
+                    onRecordingStart={() => setIsRecording(true)}
                   />
                   
-                  {/* Memory Tip - Collapsible */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
-                    className="mt-6"
-                  >
-                    <AnimatePresence mode="wait">
-                      {!showMemoryTip ? (
-                        <motion.button
-                          key="collapsed"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          onClick={() => setShowMemoryTip(true)}
-                          className="w-full glass rounded-2xl p-3 border border-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-2 group"
-                        >
-                          <span className="text-xl">💡</span>
-                          <span className="text-xs text-white/60 group-hover:text-white/80 transition-colors font-medium">
-                            Tip: How memory works
-                          </span>
-                        </motion.button>
-                      ) : (
-                        <motion.div
-                          key="expanded"
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="glass rounded-2xl p-4 border border-white/10 overflow-hidden"
-                        >
-                          <div className="flex items-start gap-3">
-                            <span className="text-2xl flex-shrink-0 mt-0.5">💡</span>
-                            <div className="flex-1">
-                              <h3 className="text-sm font-semibold text-white mb-1">
-                                ThoughtFull Dreams Keeps Memories
-                              </h3>
-                              <p className="text-xs text-white/70 leading-relaxed">
-                                Your dreams are connected! If you're recording a new dream, 
-                                mention <span className="text-electric-cyan font-medium">"this is a new dream"</span> to 
-                                start fresh. Otherwise, we'll continue from where your last dream left off.
-                              </p>
+                  {/* Memory Tip - Collapsible - Hidden during recording */}
+                  {!isRecording && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ delay: 0.3, duration: 0.5 }}
+                      className="mt-6"
+                    >
+                      <AnimatePresence mode="wait">
+                        {!showMemoryTip ? (
+                          <motion.button
+                            key="collapsed"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowMemoryTip(true)}
+                            className="w-full glass rounded-2xl p-3 border border-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-2 group"
+                          >
+                            <span className="text-xl">💡</span>
+                            <span className="text-xs text-white/60 group-hover:text-white/80 transition-colors font-medium">
+                              Tip: How memory works
+                            </span>
+                          </motion.button>
+                        ) : (
+                          <motion.div
+                            key="expanded"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="glass rounded-2xl p-5 sm:p-6 border border-white/10 overflow-hidden"
+                          >
+                            <div className="flex items-start gap-4">
+                              <span className="text-3xl sm:text-4xl flex-shrink-0 mt-1">💡</span>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-base sm:text-lg font-bold text-white mb-2">
+                                  Your Dreams Remember
+                                </h3>
+                                <p className="text-sm sm:text-base text-white/80 leading-relaxed">
+                                  Each dream continues your story. Starting fresh? Just say 
+                                  <span className="text-electric-cyan font-semibold"> "this is a new dream"</span>.
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => setShowMemoryTip(false)}
+                                className="text-white/50 hover:text-white/90 transition-colors text-2xl leading-none flex-shrink-0 -mt-1"
+                                aria-label="Close tip"
+                              >
+                                ×
+                              </button>
                             </div>
-                            <button
-                              onClick={() => setShowMemoryTip(false)}
-                              className="text-white/40 hover:text-white/80 transition-colors text-xl leading-none flex-shrink-0"
-                              aria-label="Close tip"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  )}
                 </>
               )}
 
               {step === "generating" && (
                 <div className="py-4">
-                  <div className="text-center mb-6">
+                  {/* Header */}
+                  <div className="text-center mb-8">
                     <div className="flex justify-center mb-4">
                       <motion.div
                         className="inline-block"
@@ -407,18 +434,8 @@ export default function HomePage() {
                         <SparklesIcon className="w-14 h-14 text-electric-purple" />
                       </motion.div>
                     </div>
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                      className="mb-3"
-                    >
-                      <p className="text-lg font-semibold text-electric-cyan mb-1">
-                        Recording captured!
-                      </p>
-                    </motion.div>
                     <motion.h2 
-                      className="text-2xl font-bold text-white mb-2"
+                      className="text-2xl sm:text-3xl font-bold text-white mb-2"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 }}
@@ -431,9 +448,81 @@ export default function HomePage() {
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.3 }}
                     >
-                      This will only take a moment
+                      Weaving your words into magic...
                     </motion.p>
                   </div>
+
+                  {/* Animated Words from Transcript */}
+                  {transcript && (() => {
+                    const words = transcript.split(' ');
+                    const chunkSize = 15;
+                    const startIndex = wordChunkIndex * chunkSize;
+                    const currentChunk = words.slice(startIndex, startIndex + chunkSize);
+                    
+                    return (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                        className="relative h-40 sm:h-48 mb-6 overflow-hidden rounded-2xl bg-gradient-to-br from-electric-purple/10 via-electric-magenta/10 to-electric-cyan/10 border border-white/10"
+                      >
+                        <AnimatePresence mode="wait">
+                          <motion.div
+                            key={wordChunkIndex}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.5 }}
+                            className="absolute inset-0 flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-4 sm:p-6"
+                          >
+                            {currentChunk.map((word, index) => {
+                              const sizes = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'];
+                              const colors = ['text-electric-purple', 'text-electric-cyan', 'text-electric-magenta', 'text-white', 'text-white', 'text-white/90'];
+                              const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
+                              const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                              const delay = index * 0.08;
+                              const isHighlight = randomColor.includes('white');
+                              
+                              return (
+                                <motion.span
+                                  key={`${wordChunkIndex}-${index}`}
+                                  className={`${randomSize} ${randomColor} font-bold ${isHighlight ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'opacity-80'}`}
+                                  initial={{ opacity: 0, scale: 0, rotate: -10 }}
+                                  animate={{ 
+                                    opacity: isHighlight ? [0, 1, 1, 0.9, 1] : [0, 1, 0.8, 1, 0.6, 1],
+                                    scale: isHighlight ? [0, 1.3, 1.1, 1.2, 1.1] : [0, 1.2, 1, 1.1, 1],
+                                    rotate: [-10, 5, 0, -5, 0]
+                                  }}
+                                  transition={{
+                                    duration: 3,
+                                    delay: delay,
+                                    repeat: Infinity,
+                                    repeatDelay: 2,
+                                    ease: "easeInOut"
+                                  }}
+                                >
+                                  {word}
+                                </motion.span>
+                              );
+                            })}
+                          </motion.div>
+                        </AnimatePresence>
+                        
+                        {/* Glow overlay */}
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-electric-purple/20 via-transparent to-electric-cyan/20 pointer-events-none"
+                          animate={{
+                            opacity: [0.3, 0.6, 0.3],
+                          }}
+                          transition={{
+                            duration: 4,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      </motion.div>
+                    );
+                  })()}
                   
                   <ProgressSteps currentStep={currentPipelineStep} />
 
@@ -441,21 +530,6 @@ export default function HomePage() {
                   <p aria-live="polite" aria-atomic="true" className="sr-only">
                     {`Processing: ${currentPipelineStep}. Please wait while we create your dream video.`}
                   </p>
-
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1 }}
-                    className="mt-6 text-center"
-                  >
-                    <button
-                      onClick={handleRetry}
-                      className="text-sm text-white/60 hover:text-white/80 transition-colors inline-flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 rounded px-2 py-1"
-                    >
-                      <RefreshIcon className="w-4 h-4" />
-                      Start over
-                    </button>
-                  </motion.div>
                 </div>
               )}
             </motion.div>
@@ -739,7 +813,7 @@ export default function HomePage() {
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                   >
-                    ✨
+              
                   </motion.div>
                 </motion.button>
               </motion.div>

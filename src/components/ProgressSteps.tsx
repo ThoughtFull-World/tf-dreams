@@ -18,7 +18,7 @@ export default function ProgressSteps({ currentStep }: ProgressStepsProps) {
   const currentIndex = steps.findIndex((s) => s.id === currentStep);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {steps.map((step, index) => {
         const isActive = index === currentIndex;
         const isCompleted = index < currentIndex;
@@ -30,8 +30,10 @@ export default function ProgressSteps({ currentStep }: ProgressStepsProps) {
             key={step.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ 
-              opacity: 1, 
+              opacity: isCompleted ? 0.4 : 1,
               x: 0,
+              height: isCompleted ? "auto" : "auto",
+              scale: isCompleted ? 0.95 : 1,
             }}
             transition={{ 
               delay: index * 0.1,
@@ -39,14 +41,14 @@ export default function ProgressSteps({ currentStep }: ProgressStepsProps) {
               stiffness: 300,
               damping: 25
             }}
-            className="relative"
+            className={`relative ${isCompleted ? 'h-8 overflow-hidden' : ''}`}
           >
             {/* Clean step card */}
             <div className={`
-              relative flex items-center gap-4 px-5 py-3.5 rounded-xl transition-all
-              ${isActive ? "glass-frosted shadow-glass" : ""}
-              ${isCompleted ? "glass shadow-glass" : ""}
-              ${isPending ? "glass-dark" : ""}
+              relative flex items-center gap-4 px-5 rounded-xl transition-all
+              ${isActive ? "glass-frosted shadow-glass py-3.5" : ""}
+              ${isCompleted ? "glass shadow-glass py-2" : ""}
+              ${isPending ? "glass-dark py-3.5" : ""}
             `}>
               {/* Glow for active */}
               {isActive && (
@@ -58,7 +60,7 @@ export default function ProgressSteps({ currentStep }: ProgressStepsProps) {
               {/* Icon indicator */}
               <div
                 className={`
-                  w-10 h-10 rounded-lg flex items-center justify-center relative flex-shrink-0
+                  ${isCompleted ? 'w-6 h-6' : 'w-10 h-10'} rounded-lg flex items-center justify-center relative flex-shrink-0 transition-all
                   ${isActive ? "glass-frosted" : ""}
                   ${isCompleted ? "glass" : ""}
                   ${isPending ? "glass-dark" : ""}
@@ -84,23 +86,24 @@ export default function ProgressSteps({ currentStep }: ProgressStepsProps) {
                     <Icon className="w-5 h-5 text-electric-cyan" />
                   </motion.div>
                 )}
-                {isCompleted && <CheckIcon className="w-5 h-5 text-electric-cyan" />}
+                {isCompleted && <CheckIcon className={`${isCompleted ? 'w-3 h-3' : 'w-5 h-5'} text-electric-cyan/80`} />}
                 {isPending && <Icon className="w-5 h-5 text-white/30" />}
               </div>
 
               {/* Label */}
-              <div className="flex-1 min-w-0">
-                <p 
-                  className={`
-                    font-medium text-base
-                    ${isActive ? "text-white" : ""}
-                    ${isCompleted ? "text-white/80" : ""}
-                    ${isPending ? "text-white/50" : ""}
-                  `}
-                >
-                  {step.label}
-                </p>
-              </div>
+              {!isCompleted && (
+                <div className="flex-1 min-w-0">
+                  <p 
+                    className={`
+                      font-medium text-base
+                      ${isActive ? "text-white" : ""}
+                      ${isPending ? "text-white/50" : ""}
+                    `}
+                  >
+                    {step.label}
+                  </p>
+                </div>
+              )}
 
               {/* Status dot */}
               {isActive && (
@@ -113,8 +116,8 @@ export default function ProgressSteps({ currentStep }: ProgressStepsProps) {
             </div>
 
             {/* Connector line */}
-            {index < steps.length - 1 && (
-              <div className="absolute left-9 top-full w-0.5 h-3 bg-white/10" />
+            {index < steps.length - 1 && !isCompleted && (
+              <div className="absolute left-9 top-full w-0.5 h-2 bg-white/10" />
             )}
           </motion.div>
         );
