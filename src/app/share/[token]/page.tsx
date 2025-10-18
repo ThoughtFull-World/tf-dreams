@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Button from "@/components/Button";
+import { LinkIcon, SparklesIcon, PlayIcon } from "@/components/Icons";
 
 export default function SharePage() {
   const params = useParams();
@@ -12,49 +13,102 @@ export default function SharePage() {
     window.location.href = "/";
   };
 
+  const handleCopyLink = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6">
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 relative z-10">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="w-full max-w-2xl"
       >
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            ThoughtFull Dreams
+        {/* Clean header */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl md:text-5xl font-black mb-3 font-[family-name:var(--font-space-grotesk)] text-white">
+            Shared Dream
           </h1>
-          <p className="text-white/80">
-            Shared Dream Video
+          <p className="text-lg text-white/60">
+            Someone shared their dream with you
           </p>
         </div>
 
-        {/* Main Card */}
+        {/* Main card */}
         <motion.div
-          className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-soft p-8"
+          className="glass-frosted rounded-3xl shadow-glass p-8 mb-6 relative"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, type: "spring", stiffness: 200, damping: 25 }}
         >
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-            Dream Video
-          </h2>
+          {/* Video player */}
+          <div className="relative mb-6">
+            <div className="relative glass rounded-2xl aspect-video flex items-center justify-center overflow-hidden shadow-glass">
+              <motion.div
+                className="absolute inset-0"
+                animate={{
+                  background: [
+                    "radial-gradient(circle at 20% 50%, rgba(123, 47, 247, 0.2) 0%, transparent 50%)",
+                    "radial-gradient(circle at 80% 50%, rgba(0, 217, 255, 0.2) 0%, transparent 50%)",
+                    "radial-gradient(circle at 50% 20%, rgba(255, 45, 135, 0.2) 0%, transparent 50%)",
+                    "radial-gradient(circle at 50% 80%, rgba(0, 102, 255, 0.2) 0%, transparent 50%)",
+                    "radial-gradient(circle at 20% 50%, rgba(123, 47, 247, 0.2) 0%, transparent 50%)",
+                  ],
+                }}
+                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+              />
+              
+              {/* Play button */}
+              <div className="relative z-10">
+                <motion.div
+                  className="glass-frosted w-20 h-20 rounded-full flex items-center justify-center shadow-glow cursor-pointer"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <PlayIcon className="w-8 h-8 text-white ml-1" />
+                </motion.div>
+              </div>
+            </div>
+          </div>
           
-          {/* Placeholder video area */}
-          <div className="bg-gradient-to-br from-mint to-lavender rounded-2xl aspect-video mb-4 flex items-center justify-center">
-            <p className="text-white text-lg font-medium">
-              🎬 Video Player
+          {/* Token info */}
+          <div className="glass rounded-xl p-4 mb-6 shadow-glass">
+            <p className="text-xs text-white/50 mb-1 uppercase tracking-wider font-semibold">
+              Dream ID
+            </p>
+            <p className="font-mono text-sm text-white/80 break-all">
+              {token}
             </p>
           </div>
           
-          <div className="bg-gray-100 rounded-xl p-4 mb-6">
-            <p className="text-sm text-gray-600 mb-1">Token:</p>
-            <p className="font-mono text-sm text-gray-800 break-all">{token}</p>
+          {/* Actions - Improved CTA Hierarchy */}
+          <div className="space-y-3">
+            {/* Primary action: Create Your Own */}
+            <Button 
+              onClick={handleGoHome} 
+              variant="primary" 
+              fullWidth
+              ariaLabel="Create your own dream"
+              icon={<SparklesIcon className="w-5 h-5" />}
+            >
+              Create Your Own Dream
+            </Button>
+            
+            {/* Secondary action: Copy Link */}
+            <Button 
+              onClick={handleCopyLink} 
+              variant="secondary" 
+              fullWidth
+              ariaLabel="Copy this dream's share link to clipboard"
+              icon={<LinkIcon className="w-5 h-5" />}
+            >
+              Copy Share Link
+            </Button>
           </div>
-          
-          <Button onClick={handleGoHome} fullWidth>
-            ✨ Create Your Own Dream
-          </Button>
         </motion.div>
       </motion.div>
     </main>
   );
 }
-
