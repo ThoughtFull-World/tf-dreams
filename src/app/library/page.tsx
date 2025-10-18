@@ -14,11 +14,13 @@ export default function LibraryPage() {
   // Redirect to home if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
+      console.log("🔐 Library: User not authenticated, redirecting to home");
       router.push("/");
     }
   }, [isAuthenticated, isLoading, router]);
 
   if (isLoading) {
+    console.log("⏳ Library: Loading auth state...");
     return (
       <main className="flex h-screen items-center justify-center p-4 relative z-10">
         <motion.div
@@ -31,6 +33,7 @@ export default function LibraryPage() {
   }
 
   if (!isAuthenticated) {
+    console.log("🔐 Library: Not authenticated, returning null");
     return null;
   }
 

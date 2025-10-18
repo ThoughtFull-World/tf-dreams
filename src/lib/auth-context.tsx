@@ -113,17 +113,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Subscribe to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log("🔄 Auth state changed:", event);
+        console.log("🔄 Auth state changed:", event, session ? `(${session.user.email})` : "(no user)");
         
         if (isMounted) {
-          if (session?.user) {
-            console.log("✅ User authenticated:", session.user.email);
-            setUser({
-              id: session.user.id,
-              email: session.user.email || "",
-              username: session.user.user_metadata?.username,
-            });
-          } else {
+          // Only update state for relevant events
+          if (event === "SIGNED_IN" || event === "INITIAL_SESSION" || event === "USER_UPDATED") {
+            if (session?.user) {
+              console.log("✅ User authenticated:", session.user.email);
+              setUser({
+                id: session.user.id,
+                email: session.user.email || "",
+                username: session.user.user_metadata?.username,
+              });
+            }
+          } else if (event === "SIGNED_OUT") {
             console.log("ℹ️ User logged out");
             setUser(null);
           }
