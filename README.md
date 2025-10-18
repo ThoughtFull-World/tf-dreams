@@ -1,183 +1,263 @@
-# Supabase CLI
+# ✨ ThoughtFull Dreams
 
-[![Coverage Status](https://coveralls.io/repos/github/supabase/cli/badge.svg?branch=main)](https://coveralls.io/github/supabase/cli?branch=main) [![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/supabase-cli/setup-cli/master?style=flat-square&label=Bitbucket%20Canary)](https://bitbucket.org/supabase-cli/setup-cli/pipelines) [![Gitlab Pipeline Status](https://img.shields.io/gitlab/pipeline-status/sweatybridge%2Fsetup-cli?label=Gitlab%20Canary)
-](https://gitlab.com/sweatybridge/setup-cli/-/pipelines)
+> Transform your dreams into visual stories with AI
 
-[Supabase](https://supabase.io) is an open source Firebase alternative. We're building the features of Firebase using enterprise-grade open source tools.
+ThoughtFull Dreams is an innovative web application that turns your dream recordings into beautiful AI-generated videos. Simply speak your dream, and watch it come to life.
 
-This repository contains all the functionality for Supabase CLI.
+**Made with 💜 at Cursor Hackathon SG '25**
 
-- [x] Running Supabase locally
-- [x] Managing database migrations
-- [x] Creating and deploying Supabase Functions
-- [x] Generating types directly from your database schema
-- [x] Making authenticated HTTP requests to [Management API](https://supabase.com/docs/reference/api/introduction)
+🌐 **Live App**: [dreams.thoughtfull.world](https://dreams.thoughtfull.world)
 
-## Getting started
+---
 
-### Install the CLI
+## 🎯 Features
 
-Available via [NPM](https://www.npmjs.com) as dev dependency. To install:
+- 🎤 **Voice Recording**: Speak your dreams naturally (up to 60 seconds)
+- 🤖 **AI Story Generation**: Transform voice into coherent narratives using Claude
+- 🎬 **Video Creation**: Generate stunning videos with Luma AI
+- 📚 **Dream Library**: Access all your past dreams with magic link authentication
+- 🔗 **Social Sharing**: Share your dream videos with a unique link
+- 🎨 **Beautiful UI**: Glassmorphic design with smooth animations
+- 🔐 **Passwordless Auth**: Secure magic link authentication via Supabase
 
-```bash
-npm i supabase --save-dev
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- Supabase CLI
+- Supabase account
+- Cloudflare R2 account (for video storage)
+- OpenAI API key
+- Anthropic API key
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/ThoughtFull-World/tf-dreams.git
+   cd tf-dreams
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Add your keys:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. **Start Supabase locally** (optional for development)
+   ```bash
+   npx supabase start
+   ```
+
+5. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open your browser**
+   ```
+   http://localhost:3000
+   ```
+
+---
+
+## 📁 Project Structure
+
+```
+tf-dreams/
+├── src/
+│   ├── app/                  # Next.js 14 App Router
+│   │   ├── page.tsx         # Main homepage & recording flow
+│   │   ├── library/         # Dream library page
+│   │   ├── share/           # Public sharing pages
+│   │   └── auth/            # Authentication callback
+│   ├── components/          # React components
+│   │   ├── Recorder.tsx     # Audio recording component
+│   │   ├── ProgressSteps.tsx # Video generation progress
+│   │   ├── AppLayout.tsx    # Main layout wrapper
+│   │   └── AuthDialog.tsx   # Magic link login
+│   └── lib/                 # Utilities & types
+│       ├── api.ts           # API client
+│       ├── auth-context.tsx # Auth state management
+│       └── types.ts         # TypeScript types
+├── supabase/
+│   ├── functions/           # Edge Functions
+│   │   ├── magic-link/      # Authentication
+│   │   ├── process-dream/   # Main processing pipeline
+│   │   ├── generate-video/  # Video generation
+│   │   ├── check-video-status/ # Poll video status
+│   │   └── get-random-video/ # Random public dreams
+│   └── migrations/          # Database migrations
+├── public/                  # Static assets
+└── docs/                    # Documentation
+    ├── changelogs/          # Feature updates & changes
+    ├── setup/               # Setup & integration guides
+    ├── deployment/          # Deployment instructions
+    └── design/              # Design system & UI docs
 ```
 
-To install the beta release channel:
+---
 
-```bash
-npm i supabase@beta --save-dev
+## 🔧 Tech Stack
+
+### Frontend
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first styling
+- **Framer Motion** - Smooth animations
+- **Supabase Client** - Authentication & data
+
+### Backend
+- **Supabase** - PostgreSQL database & auth
+- **Edge Functions** - Serverless Deno functions
+- **Cloudflare R2** - Video & audio storage
+- **OpenAI Whisper** - Speech-to-text
+- **Anthropic Claude** - Story generation
+- **Luma AI** - Video generation
+
+### Deployment
+- **Vercel** - Frontend hosting
+- **Supabase** - Backend & database
+- **Cloudflare R2** - Media CDN
+
+---
+
+## 🎨 Design System
+
+- **Colors**: Purple/Cyan/Magenta gradients
+- **Style**: Glassmorphism with backdrop blur
+- **Typography**: Modern, clean, accessible
+- **Components**: Reusable, responsive, animated
+
+See [`docs/design/DESIGN_SYSTEM.md`](./docs/design/DESIGN_SYSTEM.md) for details.
+
+---
+
+## 📚 Documentation
+
+### Setup & Configuration
+- [Quick Start Guide](./docs/setup/QUICKSTART.md)
+- [Magic Link Authentication Setup](./docs/setup/MAGIC_LINK_SETUP.md)
+- [Frontend Integration Guide](./docs/setup/FRONTEND_INTEGRATION_GUIDE.md)
+- [Supabase API Integration](./docs/setup/SUPABASE_API_INTEGRATION.md)
+
+### Deployment
+- [Cloudflare Deployment](./docs/deployment/CLOUDFLARE_DEPLOYMENT.md)
+- [Production Deployment Guide](./docs/deployment/DEPLOY_NOW.md)
+
+### Design & UI
+- [Design System](./docs/design/DESIGN_SYSTEM.md)
+- [Glassmorphism Implementation](./docs/design/GLASSMORPHISM_IMPLEMENTATION.md)
+- [macOS-Style Redesign](./docs/design/MACOS_REDESIGN.md)
+
+### Changelogs
+- [Feature Updates](./docs/changelogs/)
+- [Authentication Implementation](./docs/changelogs/AUTHENTICATION_IMPLEMENTATION.md)
+- [UI/UX Improvements](./docs/changelogs/UI_UX_IMPROVEMENTS.md)
+
+---
+
+## 🔐 Authentication
+
+ThoughtFull Dreams uses **passwordless authentication** via magic links:
+
+1. User enters email address
+2. Magic link sent via Supabase Auth
+3. Click link to authenticate
+4. Session persists across devices
+
+See [`docs/setup/MAGIC_LINK_SETUP.md`](./docs/setup/MAGIC_LINK_SETUP.md) for configuration.
+
+---
+
+## 🎬 Video Generation Pipeline
+
+```
+1. 🎤 Record Audio (60s max)
+   ↓
+2. 📝 Transcribe with Whisper
+   ↓
+3. 🤖 Generate Story with Claude
+   ↓
+4. 🎬 Create Video with Luma AI
+   ↓
+5. ☁️ Store in Cloudflare R2
+   ↓
+6. ✅ Ready to view & share
 ```
 
-When installing with yarn 4, you need to disable experimental fetch with the following nodejs config.
+---
 
-```
-NODE_OPTIONS=--no-experimental-fetch yarn add supabase
-```
+## 🌐 Environment Variables
 
-> **Note**
-For Bun versions below v1.0.17, you must add `supabase` as a [trusted dependency](https://bun.sh/guides/install/trusted) before running `bun add -D supabase`.
-
-<details>
-  <summary><b>macOS</b></summary>
-
-  Available via [Homebrew](https://brew.sh). To install:
-
-  ```sh
-  brew install supabase/tap/supabase
-  ```
-
-  To install the beta release channel:
-  
-  ```sh
-  brew install supabase/tap/supabase-beta
-  brew link --overwrite supabase-beta
-  ```
-  
-  To upgrade:
-
-  ```sh
-  brew upgrade supabase
-  ```
-</details>
-
-<details>
-  <summary><b>Windows</b></summary>
-
-  Available via [Scoop](https://scoop.sh). To install:
-
-  ```powershell
-  scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
-  scoop install supabase
-  ```
-
-  To upgrade:
-
-  ```powershell
-  scoop update supabase
-  ```
-</details>
-
-<details>
-  <summary><b>Linux</b></summary>
-
-  Available via [Homebrew](https://brew.sh) and Linux packages.
-
-  #### via Homebrew
-
-  To install:
-
-  ```sh
-  brew install supabase/tap/supabase
-  ```
-
-  To upgrade:
-
-  ```sh
-  brew upgrade supabase
-  ```
-
-  #### via Linux packages
-
-  Linux packages are provided in [Releases](https://github.com/supabase/cli/releases). To install, download the `.apk`/`.deb`/`.rpm`/`.pkg.tar.zst` file depending on your package manager and run the respective commands.
-
-  ```sh
-  sudo apk add --allow-untrusted <...>.apk
-  ```
-
-  ```sh
-  sudo dpkg -i <...>.deb
-  ```
-
-  ```sh
-  sudo rpm -i <...>.rpm
-  ```
-
-  ```sh
-  sudo pacman -U <...>.pkg.tar.zst
-  ```
-</details>
-
-<details>
-  <summary><b>Other Platforms</b></summary>
-
-  You can also install the CLI via [go modules](https://go.dev/ref/mod#go-install) without the help of package managers.
-
-  ```sh
-  go install github.com/supabase/cli@latest
-  ```
-
-  Add a symlink to the binary in `$PATH` for easier access:
-
-  ```sh
-  ln -s "$(go env GOPATH)/bin/cli" /usr/bin/supabase
-  ```
-
-  This works on other non-standard Linux distros.
-</details>
-
-<details>
-  <summary><b>Community Maintained Packages</b></summary>
-
-  Available via [pkgx](https://pkgx.sh/). Package script [here](https://github.com/pkgxdev/pantry/blob/main/projects/supabase.com/cli/package.yml).
-  To install in your working directory:
-
-  ```bash
-  pkgx install supabase
-  ```
-
-  Available via [Nixpkgs](https://nixos.org/). Package script [here](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/supabase-cli/default.nix).
-</details>
-
-### Run the CLI
-
-```bash
-supabase bootstrap
+### Frontend (`.env.local`)
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 ```
 
-Or using npx:
-
-```bash
-npx supabase bootstrap
+### Supabase Edge Functions
+```env
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+LUMA_API_KEY=luma_...
+R2_ENDPOINT=https://...
+R2_ACCESS_KEY_ID=...
+R2_SECRET_ACCESS_KEY=...
+R2_BUCKET_NAME=tf-dreams
+R2_PUBLIC_URL=https://...
+SITE_URL=https://dreams.thoughtfull.world
 ```
 
-The bootstrap command will guide you through the process of setting up a Supabase project using one of the [starter](https://github.com/supabase-community/supabase-samples/blob/main/samples.json) templates.
+---
 
-## Docs
+## 🤝 Contributing
 
-Command & config reference can be found [here](https://supabase.com/docs/reference/cli/about).
+We welcome contributions! Please follow these steps:
 
-## Breaking changes
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-We follow semantic versioning for changes that directly impact CLI commands, flags, and configurations.
+---
 
-However, due to dependencies on other service images, we cannot guarantee that schema migrations, seed.sql, and generated types will always work for the same CLI major version. If you need such guarantees, we encourage you to pin a specific version of CLI in package.json.
+## 📝 License
 
-## Developing
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-To run from source:
+---
 
-```sh
-# Go >= 1.22
-go run . help
-```
+## 🙏 Acknowledgments
+
+- **Cursor Hackathon SG '25** - For the inspiration and deadline
+- **Supabase** - For the amazing backend platform
+- **Luma AI** - For stunning video generation
+- **Anthropic** - For Claude AI storytelling
+- **OpenAI** - For Whisper transcription
+
+---
+
+## 📞 Contact
+
+- **GitHub**: [@ThoughtFull-World](https://github.com/ThoughtFull-World)
+- **Live App**: [dreams.thoughtfull.world](https://dreams.thoughtfull.world)
+
+---
+
+**Made with 💜 at Cursor Hackathon SG '25**
