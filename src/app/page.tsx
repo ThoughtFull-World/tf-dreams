@@ -6,7 +6,7 @@ import Recorder from "@/components/Recorder";
 import ProgressSteps from "@/components/ProgressSteps";
 import Button from "@/components/Button";
 import { SparklesIcon, LinkIcon, RefreshIcon, InstagramIcon, TikTokIcon, FullscreenIcon, PlayIcon, CloseIcon } from "@/components/Icons";
-import { processDream, generateVideo, pollForVideo } from "@/lib/api";
+import { processDream, generateVideo, pollForVideo, getRandomVideo } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 
 type Step = "record" | "generating" | "complete";
@@ -21,6 +21,7 @@ export default function HomePage() {
   const [transcript, setTranscript] = useState<string>("");
   const [story, setStory] = useState<string>("");
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [backgroundVideoUrl, setBackgroundVideoUrl] = useState<string | null>(null);
   const [currentPipelineStep, setCurrentPipelineStep] = useState<PipelineStep>("transcribe");
   const [showRetry, setShowRetry] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -30,6 +31,27 @@ export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const { isAuthenticated, isLoading, signInAnonymously } = useAuth();
+
+  // Fetch random background video on mount
+  useEffect(() => {
+    const fetchBackgroundVideo = async () => {
+      console.log("🔍 Fetching random background video...");
+      try {
+        const randomVideoUrl = await getRandomVideo();
+        console.log("📦 Received video URL:", randomVideoUrl);
+        if (randomVideoUrl) {
+          setBackgroundVideoUrl(randomVideoUrl);
+          console.log("✅ Background video set:", randomVideoUrl);
+        } else {
+          console.warn("⚠️ No video URL returned from getRandomVideo()");
+        }
+      } catch (error) {
+        console.error("❌ Error fetching background video:", error);
+      }
+    };
+
+    fetchBackgroundVideo();
+  }, []);
 
   const handleRecordingComplete = async (blob: Blob) => {
     setAudioBlob(blob);
@@ -195,14 +217,19 @@ export default function HomePage() {
       {/* Background Video - Only on record step */}
       {step === "record" && (
         <>
-          {/* Background Video - Fullscreen */}
-          <video
-            className="fixed inset-0 w-full h-full object-cover -z-10"
-            src="https://dreams.thoughtfull.world/videos/81c771d6-e4c4-4ffe-882e-d113a00480d3/ecfee84f-e6a4-495f-9fde-62bab741f8f9/c778cf59-c8ad-4c7a-935d-94185f6ebebb.mp4"
-            autoPlay
-            muted
-            loop
-          />
+          {/* Background Video - Fullscreen with Random Dream Video */}
+          {backgroundVideoUrl ? (
+            <video
+              key={backgroundVideoUrl}
+              className="fixed inset-0 w-full h-full object-cover -z-10"
+              src={backgroundVideoUrl}
+              autoPlay
+              muted
+              loop
+            />
+          ) : (
+            <div className="fixed inset-0 w-full h-full -z-10 bg-gradient-to-br from-electric-purple/30 via-electric-magenta/30 to-electric-cyan/30 animate-pulse" />
+          )}
           
           {/* Dark Overlay - Multiple layers for readability */}
           <div className="fixed inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/50 -z-10" />

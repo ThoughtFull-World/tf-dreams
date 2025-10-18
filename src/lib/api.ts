@@ -235,6 +235,36 @@ export async function startPipeline(dreamId: string): Promise<void> {
 }
 
 /**
+ * Get a random video URL for background
+ */
+export async function getRandomVideo(): Promise<string | null> {
+  try {
+    const url = `${supabaseUrl}/functions/v1/get-random-video`;
+    console.log("🌐 Calling get-random-video:", url);
+    
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("📡 Response status:", response.status);
+
+    if (!response.ok) {
+      console.error("❌ Failed to fetch random video, status:", response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    console.log("📦 Response data:", data);
+    return data.video_url || null;
+  } catch (error) {
+    console.error("❌ Error fetching random video:", error);
+    return null;
+  }
+}
+
+/**
  * Fetch a dream by share token
  */
 export async function getDreamByToken(token: string): Promise<Dream | null> {

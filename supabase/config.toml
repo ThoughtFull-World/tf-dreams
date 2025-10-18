@@ -59,4 +59,7 @@ verify_jwt = false
 [functions.magic-link]
 verify_jwt = false
 
+[functions.get-random-video]
+verify_jwt = false
+
 
