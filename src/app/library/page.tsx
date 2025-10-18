@@ -11,15 +11,12 @@ export default function LibraryPage() {
   const router = useRouter();
   const { user, isAuthenticated, logout, isLoading } = useAuth();
 
-  // TODO: Re-enable auth check after fixing magic link flow
   // Redirect to home if not authenticated
-  /*
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push("/");
     }
   }, [isAuthenticated, isLoading, router]);
-  */
 
   if (isLoading) {
     return (
@@ -33,12 +30,9 @@ export default function LibraryPage() {
     );
   }
 
-  // TODO: Re-enable after auth fix
-  /*
   if (!isAuthenticated) {
     return null;
   }
-  */
 
   // Mock dreams data - will be replaced with Supabase integration
   const dreams = [
