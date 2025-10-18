@@ -47,6 +47,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         console.log("🔐 Initializing auth...");
         
+        // Check if we have a magic link token in URL
+        const hash = typeof window !== 'undefined' ? window.location.hash : '';
+        console.log("🔗 URL hash:", hash ? `${hash.substring(0, 50)}...` : "No hash");
+        
+        if (hash.includes('access_token')) {
+          console.log("✨ Magic link token detected in URL!");
+        }
+        
         // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
@@ -64,6 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             });
           } else {
             console.log("ℹ️ No session found");
+            console.log("🔍 Session object:", session);
           }
         }
       } catch (error) {
