@@ -22,6 +22,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         router.push("/library");
       } else if (path === "/library") {
         // On library page, do nothing (user profile/menu would go here)
+      } else {
+        // On any other page, redirect to library
+        router.push("/library");
       }
     } else {
       // Not authenticated, show login dialog

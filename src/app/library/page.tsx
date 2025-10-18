@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAuth } from "@/lib/auth-context";
 import Button from "@/components/Button";
+import ShareButtons from "@/components/ShareButtons";
 import { ArrowLeftIcon, SparklesIcon } from "@/components/Icons";
 import { createBrowserClient } from "@supabase/ssr";
 
@@ -204,13 +205,22 @@ export default function LibraryPage() {
                 <h3 className="text-lg font-bold text-white mb-2 group-hover:text-electric-cyan transition-colors line-clamp-2">
                   {dream.transcript?.substring(0, 50) || "Untitled Dream"}
                 </h3>
-                <p className="text-sm text-white/60">
+                <p className="text-sm text-white/60 mb-4">
                   {new Date(dream.created_at).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
                   })}
                 </p>
+
+                {/* Share Buttons */}
+                <div className="flex justify-center pt-2 border-t border-white/10 mt-4">
+                  <ShareButtons 
+                    dreamId={dream.id} 
+                    size="sm"
+                    direction="row"
+                  />
+                </div>
               </motion.div>
             ))}
           </motion.div>
