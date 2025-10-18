@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import AppLayout from "@/components/AppLayout";
+import { AuthProvider } from "@/lib/auth-context";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -29,9 +30,11 @@ export default function RootLayout({
         {/* Vibrant waves background (like reference) */}
         <div className="fixed inset-0 bg-vibrant-waves pointer-events-none" />
         
-        <AppLayout>
-          {children}
-        </AppLayout>
+        <AuthProvider>
+          <AppLayout>
+            {children}
+          </AppLayout>
+        </AuthProvider>
       </body>
     </html>
   );
