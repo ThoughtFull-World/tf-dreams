@@ -45,41 +45,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const initializeAuth = async () => {
       try {
-        console.log("🔐 Initializing auth...");
-        
-        // Check if we have a magic link token in URL fragment
-        const hash = typeof window !== 'undefined' ? window.location.hash : '';
-        console.log("🔗 URL hash:", hash ? `${hash.substring(0, 50)}...` : "No hash");
-        
-        if (hash.includes('access_token') && hash.includes('type=magiclink')) {
-          console.log("✨ Magic link token detected! Processing...");
-          
-          // Parse the fragment parameters
-          const params = new URLSearchParams(hash.substring(1));
-          const accessToken = params.get('access_token');
-          const refreshToken = params.get('refresh_token');
-          const expiresAt = params.get('expires_at');
-          
-          if (accessToken && refreshToken && expiresAt) {
-            console.log("🔄 Setting session from magic link token...");
-            
-            // Manually set the session
-            const { data, error } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            });
-            
-            if (error) {
-              console.error("❌ Failed to set session:", error);
-            } else {
-              console.log("✅ Session set successfully!");
-              
-              // Clean up URL fragment
-              window.history.replaceState({}, document.title, window.location.pathname);
-            }
-          }
-        }
-        
         // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
@@ -89,14 +54,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (isMounted) {
           if (session?.user) {
-            console.log("✅ User session found:", session.user.email);
             setUser({
               id: session.user.id,
               email: session.user.email || "",
               username: session.user.user_metadata?.username,
             });
-          } else {
-            console.log("ℹ️ No session found");
           }
         }
       } catch (error) {
@@ -113,13 +75,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Subscribe to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log("🔄 Auth state changed:", event, session ? `(${session.user.email})` : "(no user)");
-        
         if (isMounted) {
           // Only update state for relevant events
           if (event === "SIGNED_IN" || event === "INITIAL_SESSION" || event === "USER_UPDATED") {
             if (session?.user) {
-              console.log("✅ User authenticated:", session.user.email);
               setUser({
                 id: session.user.id,
                 email: session.user.email || "",
@@ -127,7 +86,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               });
             }
           } else if (event === "SIGNED_OUT") {
-            console.log("ℹ️ User logged out");
             setUser(null);
           }
         }
