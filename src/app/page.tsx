@@ -168,8 +168,10 @@ export default function HomePage() {
     }
 
     // Fallback: Copy just the URL to clipboard and open Instagram
-    await navigator.clipboard.writeText(shareUrl);
-    window.open("https://www.instagram.com/", "_blank");
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      await navigator.clipboard.writeText(shareUrl);
+      window.open("https://www.instagram.com/", "_blank");
+    }
   };
 
   const handleTikTokShare = async () => {
@@ -192,8 +194,10 @@ export default function HomePage() {
     }
 
     // Fallback: Copy just the URL to clipboard and open TikTok
-    await navigator.clipboard.writeText(shareUrl);
-    window.open("https://www.tiktok.com/", "_blank");
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      await navigator.clipboard.writeText(shareUrl);
+      window.open("https://www.tiktok.com/", "_blank");
+    }
   };
 
   const handlePlayVideo = async () => {
@@ -226,7 +230,7 @@ export default function HomePage() {
   };
 
   const exitFullscreen = () => {
-    if (document.fullscreenElement) {
+    if (typeof document !== 'undefined' && document.fullscreenElement) {
       document.exitFullscreen();
     }
     setIsFullscreen(false);
@@ -236,6 +240,8 @@ export default function HomePage() {
 
   // Listen for fullscreen changes
   useEffect(() => {
+    if (typeof document === 'undefined') return;
+    
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement) {
         setIsFullscreen(false);

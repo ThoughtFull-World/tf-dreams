@@ -174,10 +174,14 @@ export default function LibraryPage() {
                       className="w-full h-full object-cover"
                       muted
                       loop
-                      onMouseEnter={(e) => e.currentTarget.play()}
+                      onMouseEnter={(e) => {
+                        const video = e.currentTarget as HTMLVideoElement;
+                        video.play().catch(() => {});
+                      }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.pause();
-                        e.currentTarget.currentTime = 0;
+                        const video = e.currentTarget as HTMLVideoElement;
+                        video.pause();
+                        video.currentTime = 0;
                       }}
                     />
                   ) : (

@@ -78,12 +78,16 @@ export default function SharePage() {
   }, [token]);
 
   const handleGoHome = () => {
-    window.location.href = "/";
+    if (typeof window !== 'undefined') {
+      window.location.href = "/";
+    }
   };
 
   const handleCopyLink = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url);
+    }
   };
 
   const handlePlayVideo = async () => {
@@ -101,7 +105,7 @@ export default function SharePage() {
   };
 
   const exitFullscreen = () => {
-    if (document.fullscreenElement) {
+    if (typeof document !== 'undefined' && document.fullscreenElement) {
       document.exitFullscreen();
     }
     setIsFullscreen(false);
@@ -113,6 +117,8 @@ export default function SharePage() {
   };
 
   useEffect(() => {
+    if (typeof document === 'undefined') return;
+    
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement) {
         setIsFullscreen(false);
@@ -206,7 +212,7 @@ export default function SharePage() {
                       onPause={() => setIsPlaying(false)}
                       muted
                       loop
-                      autoplay
+                      autoPlay
                       preload="auto"
                     />
                     
