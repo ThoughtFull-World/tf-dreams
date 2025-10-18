@@ -133,7 +133,7 @@ export default function SharePage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-6 relative z-10">
+      <main className="flex min-h-screen flex-col items-center justify-center p-3 sm:p-6 relative z-10 w-full max-w-full overflow-x-hidden">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
@@ -145,16 +145,16 @@ export default function SharePage() {
 
   if (error || !dream) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-6 relative z-10">
+      <main className="flex min-h-screen flex-col items-center justify-center p-3 sm:p-6 relative z-10 w-full max-w-full overflow-x-hidden">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-2xl text-center"
+          className="w-full max-w-2xl text-center px-4"
         >
-          <h1 className="text-4xl md:text-5xl font-black mb-3 font-[family-name:var(--font-space-grotesk)] text-white">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 font-[family-name:var(--font-space-grotesk)] text-white">
             Dream Not Found
           </h1>
-          <p className="text-lg text-white/60 mb-8">
+          <p className="text-base sm:text-lg text-white/60 mb-6 sm:mb-8">
             {error || "This dream doesn't exist or has been deleted"}
           </p>
           <Button 
@@ -171,32 +171,32 @@ export default function SharePage() {
 
   return (
     <AppLayout>
-      <main className="flex min-h-screen flex-col items-center justify-center p-6 pt-20">
+      <main className="flex min-h-screen flex-col items-center justify-center p-3 sm:p-6 pt-16 sm:pt-20 w-full max-w-full overflow-x-hidden">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-2xl"
+          className="w-full max-w-2xl px-2 sm:px-0"
         >
           {/* Clean header */}
-          <div className="text-center mb-10">
-            <h1 className="text-4xl md:text-5xl font-black mb-3 font-[family-name:var(--font-space-grotesk)] text-white">
+          <div className="text-center mb-6 sm:mb-10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-2 sm:mb-3 font-[family-name:var(--font-space-grotesk)] text-white">
               ThoughtFull Dreams
             </h1>
-            <p className="text-lg text-white/60">
+            <p className="text-base sm:text-lg text-white/60">
               Someone shared their dream with you
             </p>
           </div>
 
           {/* Main card */}
           <motion.div
-            className="glass-frosted rounded-3xl shadow-glass p-8 mb-6 relative"
+            className="glass-frosted rounded-2xl sm:rounded-3xl shadow-glass p-4 sm:p-6 md:p-8 mb-4 sm:mb-6 relative"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, type: "spring", stiffness: 200, damping: 25 }}
           >
             {/* Video player */}
-            <div className="relative mb-6">
+            <div className="relative mb-4 sm:mb-6">
               <div 
                 className={`relative glass rounded-2xl flex items-center justify-center overflow-hidden shadow-glass ${
                   isFullscreen ? "w-full h-full fixed inset-0 z-50 rounded-none" : "aspect-video"
@@ -226,11 +226,11 @@ export default function SharePage() {
                         transition={{ delay: 0.3, type: "spring" }}
                       >
                         <motion.div
-                          className="glass-frosted w-20 h-20 rounded-full flex items-center justify-center shadow-glow"
+                          className="glass-frosted w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-glow"
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <PlayIcon className="w-8 h-8 text-white ml-1" />
+                          <PlayIcon className="w-6 h-6 sm:w-8 sm:h-8 text-white ml-1" />
                         </motion.div>
                       </motion.button>
                     )}
@@ -239,13 +239,13 @@ export default function SharePage() {
                     {isFullscreen && (
                       <motion.button
                         onClick={exitFullscreen}
-                        className="absolute top-6 right-6 z-50 glass-frosted rounded-xl p-3 hover:bg-white/10"
+                        className="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 glass-frosted rounded-xl p-2 sm:p-3 hover:bg-white/10"
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <CloseIcon className="w-6 h-6 text-white" />
+                        <CloseIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       </motion.button>
                     )}
                   </>
@@ -278,11 +278,11 @@ export default function SharePage() {
             </div>
             
             {/* Dream Info */}
-            <div className="glass rounded-xl p-4 mb-6 shadow-glass">
+            <div className="glass rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 shadow-glass">
               <p className="text-xs text-white/50 mb-2 uppercase tracking-wider font-semibold">
                 Dream Description
               </p>
-              <p className="text-sm text-white/80 line-clamp-3 mb-3">
+              <p className="text-sm text-white/80 line-clamp-3 mb-2 sm:mb-3">
                 {dream.transcript || "No transcript available"}
               </p>
               <p className="text-xs text-white/50">
@@ -291,7 +291,7 @@ export default function SharePage() {
             </div>
             
             {/* Actions */}
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <Button 
                 onClick={handleGoHome} 
                 variant="primary" 
