@@ -1,8 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import AppLayout from "@/components/AppLayout";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const spaceGrotesk = Space_Grotesk({ 
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+});
 
 export const metadata: Metadata = {
   title: "ThoughtFull Dreams",
@@ -15,11 +24,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-gradient-to-br from-sky via-lavender to-peach min-h-screen`}>
-        {children}
+    <html lang="en" className="overflow-hidden">
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 h-screen relative overflow-hidden`}>
+        {/* Vibrant waves background (like reference) */}
+        <div className="fixed inset-0 bg-vibrant-waves pointer-events-none" />
+        
+        <AppLayout>
+          {children}
+        </AppLayout>
       </body>
     </html>
   );
 }
-
