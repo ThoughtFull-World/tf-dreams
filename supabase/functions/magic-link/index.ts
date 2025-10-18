@@ -82,7 +82,11 @@ serve(async (req: Request) => {
     console.log(`Sending magic link to: ${email}`);
 
     // Determine redirect URL based on environment
-    const redirectTo = "http://localhost:3000";
+    // Check for SITE_URL env var first, then fall back to localhost for development
+    const siteUrl = Deno.env.get("SITE_URL") || "http://localhost:3000";
+    const redirectTo = `${siteUrl}/auth/callback`;
+
+    console.log(`Redirect URL: ${redirectTo}`);
 
     // Send magic link
     const { error } = await supabase.auth.signInWithOtp({

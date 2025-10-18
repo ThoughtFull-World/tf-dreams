@@ -10,15 +10,32 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Get the hash fragment which contains the OAuth tokens
+        // Get the hash fragment which contains the OAuth tokens or errors
         const hash = typeof window !== 'undefined' ? window.location.hash : '';
         
         if (hash) {
-          // Parse the fragment to get tokens
+          // Parse the fragment to get tokens or errors
           const params = new URLSearchParams(hash.substring(1));
+          
+          // Check for errors first
+          const error = params.get('error');
+          const errorCode = params.get('error_code');
+          const errorDescription = params.get('error_description');
+          
+          if (error) {
+            // Handle specific error cases
+            if (errorCode === 'otp_expired') {
+              router.push("/?auth_error=link_expired");
+              return;
+            }
+            // Generic error
+            router.push("/?auth_error=auth_failed");
+            return;
+          }
+          
+          // No error, check for tokens
           const accessToken = params.get('access_token');
           const refreshToken = params.get('refresh_token');
-          const expiresAt = params.get('expires_at');
 
           if (accessToken) {
             // Set the session in Supabase
@@ -28,12 +45,12 @@ export default function AuthCallbackPage() {
             );
 
             // Create a session from the tokens
-            const { error } = await supabase.auth.setSession({
+            const { error: sessionError } = await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken || "",
             });
 
-            if (!error) {
+            if (!sessionError) {
               // Session set successfully, redirect to home
               router.push("/");
               return;
