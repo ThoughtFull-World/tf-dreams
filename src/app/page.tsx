@@ -126,14 +126,52 @@ export default function HomePage() {
     navigator.clipboard.writeText(shareUrl);
   };
 
-  const handleInstagramShare = () => {
-    // In production, this would use Instagram's sharing API or deep link
-    alert("Instagram sharing would open here. In production, this uses Instagram's sharing API.");
+  const handleInstagramShare = async () => {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const shareUrl = `${baseUrl}/share/${shareToken}`;
+    const shareText = `Check out my dream video created with ThoughtFull Dreams!\n\n${shareUrl}`;
+    
+    // Try native Web Share API first (works on mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "ThoughtFull Dreams",
+          text: shareText,
+          url: shareUrl,
+        });
+        return;
+      } catch (error) {
+        // User cancelled, continue to fallback
+      }
+    }
+
+    // Fallback: Copy just the URL to clipboard and open Instagram
+    await navigator.clipboard.writeText(shareUrl);
+    window.open("https://www.instagram.com/", "_blank");
   };
 
-  const handleTikTokShare = () => {
-    // In production, this would use TikTok's sharing API or deep link
-    alert("TikTok sharing would open here. In production, this uses TikTok's sharing API.");
+  const handleTikTokShare = async () => {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const shareUrl = `${baseUrl}/share/${shareToken}`;
+    const shareText = `Check out my dream video created with ThoughtFull Dreams!\n${shareUrl}`;
+    
+    // Try native Web Share API first
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "ThoughtFull Dreams",
+          text: shareText,
+          url: shareUrl,
+        });
+        return;
+      } catch (error) {
+        // User cancelled, continue to fallback
+      }
+    }
+
+    // Fallback: Copy just the URL to clipboard and open TikTok
+    await navigator.clipboard.writeText(shareUrl);
+    window.open("https://www.tiktok.com/", "_blank");
   };
 
   const handlePlayVideo = async () => {

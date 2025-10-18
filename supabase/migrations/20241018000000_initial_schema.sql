@@ -59,6 +59,10 @@ CREATE POLICY "Users can view their own dreams"
   ON dreams FOR SELECT
   USING (auth.uid() = user_id);
 
+CREATE POLICY "Anyone can view all dreams"
+  ON dreams FOR SELECT
+  USING (true);
+
 CREATE POLICY "Users can insert their own dreams"
   ON dreams FOR INSERT
   WITH CHECK (auth.uid() = user_id);
@@ -81,6 +85,10 @@ CREATE POLICY "Users can view story nodes from their dreams"
       AND dreams.user_id = auth.uid()
     )
   );
+
+CREATE POLICY "Anyone can view all story nodes"
+  ON story_nodes FOR SELECT
+  USING (true);
 
 CREATE POLICY "Users can insert story nodes to their dreams"
   ON story_nodes FOR INSERT
