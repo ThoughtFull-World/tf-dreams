@@ -25,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 min-h-screen relative`}>
+    <html lang="en" className="overflow-x-hidden">
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 min-h-screen relative overflow-x-hidden`}>
         {/* Vibrant waves background (like reference) */}
         <div className="fixed inset-0 bg-vibrant-waves pointer-events-none" />
         

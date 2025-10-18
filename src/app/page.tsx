@@ -281,7 +281,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="flex h-screen flex-col items-center justify-center p-3 sm:p-4 md:p-6 relative z-10 overflow-y-auto overflow-x-hidden">
+    <main className="flex h-screen flex-col items-center justify-center p-3 sm:p-4 md:p-6 relative z-10 overflow-y-auto overflow-x-hidden w-full max-w-full">
       {/* Background Video - Only on record step */}
       {step === "record" && (
         <>
@@ -309,7 +309,7 @@ export default function HomePage() {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className={`w-full ${step === "complete" ? "max-w-4xl" : "max-w-lg"} transition-all duration-500`}
+        className={`w-full max-w-full ${step === "complete" ? "md:max-w-4xl" : "md:max-w-lg"} transition-all duration-500 px-2 sm:px-0`}
       >
         {/* Header - consistent size */}
         <motion.div 
@@ -685,7 +685,7 @@ export default function HomePage() {
 
                         {/* Create Another Dream Button at bottom */}
                         <motion.div
-                          className="absolute bottom-8 left-0 right-0 z-30 px-8 pointer-events-none"
+                          className="absolute bottom-8 left-0 right-0 z-30 px-4 sm:px-8 pointer-events-none"
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 20 }}
