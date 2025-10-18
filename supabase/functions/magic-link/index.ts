@@ -84,7 +84,7 @@ serve(async (req: Request) => {
     // Determine redirect URL based on environment
     const redirectTo = supabaseUrl.includes("localhost") 
       ? "http://localhost:3000/auth/callback"
-      : "https://thoughtfull.world/auth/callback";
+      : "https://dreams.thoughtfull.world/auth/callback";
 
     // Send magic link
     const { error } = await supabase.auth.signInWithOtp({
