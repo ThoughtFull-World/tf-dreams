@@ -47,12 +47,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         console.log("🔐 Initializing auth...");
         
-        // Check if we have a magic link token in URL
+        // Check if we have a magic link token in URL fragment
         const hash = typeof window !== 'undefined' ? window.location.hash : '';
         console.log("🔗 URL hash:", hash ? `${hash.substring(0, 50)}...` : "No hash");
         
-        if (hash.includes('access_token')) {
-          console.log("✨ Magic link token detected in URL!");
+        if (hash.includes('access_token') && hash.includes('type=magiclink')) {
+          console.log("✨ Magic link token detected! Processing...");
+          
+          // Parse the fragment parameters
+          const params = new URLSearchParams(hash.substring(1));
+          const accessToken = params.get('access_token');
+          const refreshToken = params.get('refresh_token');
+          const expiresAt = params.get('expires_at');
+          
+          if (accessToken && refreshToken && expiresAt) {
+            console.log("🔄 Setting session from magic link token...");
+            
+            // Manually set the session
+            const { data, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+            
+            if (error) {
+              console.error("❌ Failed to set session:", error);
+            } else {
+              console.log("✅ Session set successfully!");
+              
+              // Clean up URL fragment
+              window.history.replaceState({}, document.title, window.location.pathname);
+            }
+          }
         }
         
         // Get current session
@@ -72,7 +97,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             });
           } else {
             console.log("ℹ️ No session found");
-            console.log("🔍 Session object:", session);
           }
         }
       } catch (error) {
