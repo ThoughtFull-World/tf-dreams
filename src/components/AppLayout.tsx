@@ -9,13 +9,18 @@ import AuthDialog from "./AuthDialog";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
 
-  const handleAccountClick = () => {
+  const handleAccountClick = async () => {
     if (isAuthenticated) {
-      // Navigate to library if authenticated
-      router.push("/library");
+      // Show logout confirmation or dropdown
+      try {
+        await logout();
+        router.push("/");
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
     } else {
       // Show auth dialog if not authenticated
       setShowAuthDialog(true);
@@ -39,6 +44,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
+            ThoughtFull Dreams
           </motion.div>
 
           {/* User Account Button - Right side */}
@@ -47,8 +53,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             className="rounded-full p-2 md:p-3 hover:bg-white/10 transition-all backdrop-blur-md bg-white/5 border border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            aria-label={isAuthenticated ? "Open account menu" : "Sign in to your account"}
-            title={isAuthenticated ? "Sign In / Library" : "Sign In"}
+            aria-label={isAuthenticated ? `Logout (${user?.email})` : "Sign in to your account"}
+            title={isAuthenticated ? `Logout (${user?.email})` : "Sign In"}
           >
             <UserIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
           </motion.button>
