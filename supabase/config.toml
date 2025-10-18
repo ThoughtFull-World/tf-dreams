@@ -39,6 +39,7 @@ enable_signup = true
 enable_signup = true
 double_confirm_changes = true
 enable_confirmations = false
+otp_expiry = 3600
 
 [functions.process-dream]
 verify_jwt = true
@@ -54,4 +55,8 @@ verify_jwt = false
 
 [functions.login]
 verify_jwt = false
+
+[functions.magic-link]
+verify_jwt = false
+
 

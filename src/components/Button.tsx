@@ -10,6 +10,7 @@ interface ButtonProps {
   icon?: ReactNode;
   iconPosition?: "left" | "right";
   ariaLabel?: string;
+  type?: "button" | "submit" | "reset";
 }
 
 export default function Button({
@@ -21,6 +22,7 @@ export default function Button({
   icon,
   iconPosition = "left",
   ariaLabel,
+  type = "button",
 }: ButtonProps) {
   const baseStyles = "px-6 py-3 rounded-xl font-semibold text-base transition-all relative inline-flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900";
   
@@ -37,6 +39,7 @@ export default function Button({
 
   return (
     <motion.button
+      type={type}
       whileTap={disabled ? undefined : { scale: 0.97 }}
       whileHover={disabled ? undefined : { scale: 1.01 }}
       onClick={disabled ? undefined : onClick}

@@ -7,6 +7,7 @@ import ProgressSteps from "@/components/ProgressSteps";
 import Button from "@/components/Button";
 import { SparklesIcon, LinkIcon, RefreshIcon, InstagramIcon, TikTokIcon, FullscreenIcon, PlayIcon, CloseIcon } from "@/components/Icons";
 import { uploadAudioAndCreateDream, startPipeline } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 
 type Step = "record" | "generating" | "complete";
 type PipelineStep = "transcribe" | "story" | "video" | "ready";
@@ -23,6 +24,8 @@ export default function HomePage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  const { isAuthenticated, isLoading } = useAuth();
 
   const handleRecordingComplete = async (blob: Blob) => {
     setAudioBlob(blob);
@@ -539,6 +542,38 @@ export default function HomePage() {
                   </motion.div>
                 </motion.button>
               </motion.div>
+              )}
+
+              {/* Authentication Prompt - Show if not authenticated */}
+              {!isFullscreen && !isAuthenticated && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="glass rounded-2xl p-6 text-center"
+                >
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    Save Your Dream ✨
+                  </h3>
+                  <p className="text-white/70 mb-4">
+                    Sign in or create an account to save and access all your recorded dreams from anywhere.
+                  </p>
+                  <p className="text-sm text-white/50 mb-4">
+                    Build your personal dream library and revisit your creative moments anytime.
+                  </p>
+                  <div className="flex gap-3 justify-center">
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        // Focus on the account button to trigger auth dialog
+                        const accountButton = document.querySelector('[aria-label*="Sign in"]') as HTMLButtonElement;
+                        accountButton?.click();
+                      }}
+                    >
+                      Sign In Now
+                    </Button>
+                  </div>
+                </motion.div>
               )}
             </motion.div>
           )}
