@@ -22,6 +22,7 @@ export default function HomePage() {
   const [showFullscreenControls, setShowFullscreenControls] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoContainerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleRecordingComplete = async (blob: Blob) => {
     setAudioBlob(blob);
@@ -85,10 +86,17 @@ export default function HomePage() {
       setIsFullscreen(true);
       setIsPlaying(true);
       setShowFullscreenControls(false);
+      // Play the video
+      if (videoRef.current) {
+        videoRef.current.play().catch(err => console.error("Play failed:", err));
+      }
     } catch (error) {
       console.error("Could not enter fullscreen:", error);
       // Fallback: just play without fullscreen
       setIsPlaying(true);
+      if (videoRef.current) {
+        videoRef.current.play().catch(err => console.error("Play failed:", err));
+      }
     }
   };
 
@@ -126,6 +134,24 @@ export default function HomePage() {
 
   return (
     <main className="flex h-screen flex-col items-center justify-center p-4 md:p-6 relative z-10 overflow-hidden">
+      {/* Background Video - Only on record step */}
+      {step === "record" && (
+        <>
+          {/* Background Video - Fullscreen */}
+          <video
+            className="fixed inset-0 w-full h-full object-cover -z-10"
+            src="https://dreams.thoughtfull.world/videos/81c771d6-e4c4-4ffe-882e-d113a00480d3/ecfee84f-e6a4-495f-9fde-62bab741f8f9/c778cf59-c8ad-4c7a-935d-94185f6ebebb.mp4"
+            autoPlay
+            muted
+            loop
+          />
+          
+          {/* Dark Overlay - Multiple layers for readability */}
+          <div className="fixed inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/50 -z-10" />
+          <div className="fixed inset-0 bg-black/25 -z-10 backdrop-blur-sm" />
+        </>
+      )}
+
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -281,6 +307,17 @@ export default function HomePage() {
                     }}
                   />
 
+                  {/* Video Element */}
+                  <video
+                    ref={videoRef}
+                    className="w-full h-full object-cover"
+                    src="https://dreams.thoughtfull.world/videos/81c771d6-e4c4-4ffe-882e-d113a00480d3/ecfee84f-e6a4-495f-9fde-62bab741f8f9/c778cf59-c8ad-4c7a-935d-94185f6ebebb.mp4"
+                    onPlay={() => setIsPlaying(true)}
+                    onPause={() => setIsPlaying(false)}
+                    muted
+                    loop
+                  />
+
                   {/* Play button overlay - only show when not playing */}
                   {!isPlaying && (
                     <div className="absolute inset-0 flex items-center justify-center z-10">
@@ -416,10 +453,10 @@ export default function HomePage() {
               {/* Share Options - Glass Icon Buttons - Hide in fullscreen */}
               {!isFullscreen && (
                 <motion.div
-                  className="flex justify-center gap-4"
+                  className="flex justify-center gap-4 mt-8"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ delay: 0.6 }}
                 >
                 {/* Instagram */}
                 <motion.button

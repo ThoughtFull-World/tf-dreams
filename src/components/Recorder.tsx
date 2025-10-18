@@ -80,9 +80,11 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
         }
         setAudioLevel(0);
         
-        // Immediately submit without showing "just finished" state
+        // Create blob and wait 2s before calling onRecordingComplete
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-        onRecordingComplete(blob);
+        setTimeout(() => {
+          onRecordingComplete(blob);
+        }, 2000);
       };
 
       mediaRecorder.start();
@@ -110,6 +112,7 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+      setJustFinished(true);
       
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -162,7 +165,7 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
 
           {/* Main orb */}
           <motion.div
-            onClick={!isRecording && !justFinished ? startRecording : undefined}
+            onClick={isRecording ? stopRecording : (!justFinished ? startRecording : undefined)}
             animate={isRecording ? {
               scale: 1 + (audioLevel * 0.15),
             } : justFinished ? {
@@ -172,10 +175,10 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
               duration: justFinished ? 0.4 : 0.1,
               ease: "easeOut",
             }}
-            whileHover={!isRecording && !justFinished ? { scale: 1.05 } : {}}
-            whileTap={!isRecording && !justFinished ? { scale: 0.95 } : {}}
+            whileHover={!isRecording && !justFinished ? { scale: 1.05 } : isRecording ? { scale: 1.08 } : {}}
+            whileTap={!isRecording && !justFinished ? { scale: 0.95 } : isRecording ? { scale: 0.92 } : {}}
             className={`w-24 h-24 rounded-full flex items-center justify-center relative glass-frosted shadow-glass ${
-              justFinished ? "ring-2 ring-electric-cyan/50" : ""
+              justFinished ? "ring-2 ring-electric-cyan/50" : isRecording ? "ring-2 ring-electric-purple/50 cursor-pointer" : ""
             } ${!isRecording && !justFinished ? "cursor-pointer" : ""}`}
           >
             {isRecording && (
@@ -246,8 +249,13 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
                     transition={{ duration: 1.5, repeat: Infinity }}
                     className="w-2 h-2 bg-electric-purple rounded-full"
                   />
-                  Recording
+                  Recording • Tap to stop
                 </motion.div>
+                {recordingTime >= 55 && (
+                  <p className="text-xs text-electric-cyan/80 mt-2">
+                    Max 1 minute - auto-stopping soon
+                  </p>
+                )}
               </motion.div>
             ) : justFinished ? (
               <motion.div
@@ -257,10 +265,13 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
                 exit={{ opacity: 0, scale: 0.9 }}
               >
                 <p className="text-lg font-semibold text-electric-cyan">
-                  Recording captured!
+                  ✓ Recording stopped
                 </p>
                 <p className="text-sm text-white/60 mt-1">
-                  Starting generation...
+                  {recordingTime >= 59 ? "Auto-stopped at 1 minute" : "Ready to process your dream"} 
+                </p>
+                <p className="text-xs text-white/40 mt-2">
+                  Processing your dream...
                 </p>
               </motion.div>
             ) : (
@@ -282,7 +293,7 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
           
           {/* Accessible status for screen readers */}
           <p aria-live="polite" className="sr-only">
-            {isRecording ? `Recording: ${formatTime(recordingTime)}` : "Ready to record"}
+            {isRecording ? `Recording: ${formatTime(recordingTime)}. Tap to stop.` : justFinished ? "Recording stopped. Processing your dream." : "Ready to record"}
           </p>
         </div>
       </motion.div>
@@ -336,8 +347,24 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
             <Button 
               onClick={stopRecording} 
               variant="glass" 
-              fullWidth 
-              icon={<StopIcon className="w-5 h-5" />}
+              fullWidth
+            >
+              Create My Dream ✨
+            </Button>
+          </motion.div>
+        )}
+
+        {justFinished && (
+          <motion.div
+            key="finished"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            <Button 
+              onClick={() => onRecordingComplete(new Blob(chunksRef.current, { type: "audio/webm" }))} 
+              variant="glass" 
+              fullWidth
             >
               Create My Dream ✨
             </Button>
