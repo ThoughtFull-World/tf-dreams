@@ -56,6 +56,7 @@ Feature updates and implementation logs
 - **[ANONYMOUS_AND_RESPONSIVE_UPDATE.md](./changelogs/ANONYMOUS_AND_RESPONSIVE_UPDATE.md)** - Anonymous user & responsive updates
 - **[RANDOM_BACKGROUND_VIDEO.md](./changelogs/RANDOM_BACKGROUND_VIDEO.md)** - Random background video feature
 - **[MAGICAL_FLOW.md](./changelogs/MAGICAL_FLOW.md)** - Magical user flow implementation
+- **[ENHANCED_SOCIAL_SHARE.md](./changelogs/ENHANCED_SOCIAL_SHARE.md)** - Enhanced social media sharing
 
 #### UI/UX Improvements
 - **[UI_UX_IMPROVEMENTS.md](./changelogs/UI_UX_IMPROVEMENTS.md)** - UI/UX improvements log
