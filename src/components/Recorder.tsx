@@ -136,7 +136,7 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
         animate={isRecording ? { scale: 1.05 } : { scale: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        {/* Wave rings */}
+        {/* Wave rings & Glow effect */}
         <div className="relative">
           <AnimatePresence>
             {isRecording && (
@@ -163,9 +163,25 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
             )}
           </AnimatePresence>
 
-          {/* Main orb */}
-          <motion.div
+          {/* Gradient glow background - only when not recording/finished */}
+          {!isRecording && !justFinished && (
+            <motion.div
+              className="absolute -inset-8 bg-gradient-to-r from-electric-purple via-electric-magenta to-electric-cyan rounded-full blur-2xl opacity-40"
+              animate={{
+                opacity: [0.3, 0.5, 0.3],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          )}
+
+          {/* Main orb button */}
+          <motion.button
             onClick={isRecording ? stopRecording : (!justFinished ? startRecording : undefined)}
+            disabled={justFinished}
             animate={isRecording ? {
               scale: 1 + (audioLevel * 0.15),
             } : justFinished ? {
@@ -175,11 +191,13 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
               duration: justFinished ? 0.4 : 0.1,
               ease: "easeOut",
             }}
-            whileHover={!isRecording && !justFinished ? { scale: 1.05 } : isRecording ? { scale: 1.08 } : {}}
+            whileHover={!isRecording && !justFinished ? { scale: 1.05, y: -2 } : isRecording ? { scale: 1.08 } : {}}
             whileTap={!isRecording && !justFinished ? { scale: 0.95 } : isRecording ? { scale: 0.92 } : {}}
-            className={`w-24 h-24 rounded-full flex items-center justify-center relative glass-frosted shadow-glass ${
-              justFinished ? "ring-2 ring-electric-cyan/50" : isRecording ? "ring-2 ring-electric-purple/50 cursor-pointer" : ""
-            } ${!isRecording && !justFinished ? "cursor-pointer" : ""}`}
+            className={`relative w-32 h-32 rounded-full flex items-center justify-center shadow-2xl transition-all ${
+              justFinished ? "glass-frosted ring-2 ring-electric-cyan/50" : 
+              isRecording ? "glass-frosted ring-2 ring-electric-purple/50 cursor-pointer" : 
+              "bg-gradient-to-r from-electric-purple via-electric-magenta to-electric-cyan cursor-pointer"
+            } ${justFinished ? "cursor-not-allowed opacity-70" : ""}`}
           >
             {isRecording && (
               <div 
@@ -188,34 +206,34 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
               />
             )}
             
-            <MicrophoneIcon className={`w-10 h-10 relative z-10 transition-colors ${
+            <MicrophoneIcon className={`w-12 h-12 relative z-10 transition-colors ${
               isRecording ? 'text-electric-purple' : 
               justFinished ? 'text-electric-cyan' : 
-              'text-white'
+              'text-white drop-shadow-lg'
             }`} />
-          </motion.div>
+          </motion.button>
 
           {/* Progress ring */}
           {isRecording && (
-            <svg className="absolute -inset-2 w-28 h-28 -rotate-90 pointer-events-none">
+            <svg className="absolute -inset-3 w-[144px] h-[144px] -rotate-90 pointer-events-none">
               <circle
-                cx="56"
-                cy="56"
-                r="52"
+                cx="72"
+                cy="72"
+                r="68"
                 stroke="rgba(255,255,255,0.1)"
                 strokeWidth="2"
                 fill="none"
               />
               <circle
-                cx="56"
-                cy="56"
-                r="52"
+                cx="72"
+                cy="72"
+                r="68"
                 stroke="url(#gradient)"
                 strokeWidth="2"
                 fill="none"
                 strokeLinecap="round"
-                strokeDasharray={`${2 * Math.PI * 52}`}
-                strokeDashoffset={`${2 * Math.PI * 52 * (1 - progress)}`}
+                strokeDasharray={`${2 * Math.PI * 68}`}
+                strokeDashoffset={`${2 * Math.PI * 68 * (1 - progress)}`}
                 style={{ transition: 'stroke-dashoffset 0.3s ease' }}
               />
               <defs>
@@ -282,7 +300,7 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
                 exit={{ opacity: 0 }}
               >
                 <p className="text-lg font-medium text-white">
-                  Tap to start recording
+                  Click to start recording
                 </p>
                 <p className="text-sm text-white/60 mt-1">
                   Speak naturally about your dream
@@ -320,23 +338,6 @@ export default function Recorder({ onRecordingComplete, showQuickActions = false
 
       {/* Main action button */}
       <AnimatePresence mode="wait">
-        {!isRecording && !justFinished && (
-          <motion.div
-            key="start"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-            <Button 
-              onClick={startRecording} 
-              fullWidth 
-              icon={<MicrophoneIcon className="w-5 h-5" />}
-            >
-              Start Recording
-            </Button>
-          </motion.div>
-        )}
-
         {isRecording && (
           <motion.div
             key="stop"

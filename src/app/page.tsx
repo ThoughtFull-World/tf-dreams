@@ -27,6 +27,7 @@ export default function HomePage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFullscreenControls, setShowFullscreenControls] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showMemoryTip, setShowMemoryTip] = useState(false);
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -257,7 +258,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="flex h-screen flex-col items-center justify-center p-4 md:p-6 relative z-10 overflow-hidden">
+    <main className="flex h-screen flex-col items-center justify-center p-4 md:p-6 relative z-10 overflow-y-auto overflow-x-hidden">
       {/* Background Video - Only on record step */}
       {step === "record" && (
         <>
@@ -324,11 +325,68 @@ export default function HomePage() {
               className="glass-frosted rounded-3xl shadow-glass p-8 relative"
             >
               {step === "record" && (
-                <Recorder 
-                  onRecordingComplete={handleRecordingComplete}
-                  showQuickActions={showRetry}
-                  onRetry={handleRetry}
-                />
+                <>
+                  <Recorder 
+                    onRecordingComplete={handleRecordingComplete}
+                    showQuickActions={showRetry}
+                    onRetry={handleRetry}
+                  />
+                  
+                  {/* Memory Tip - Collapsible */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                    className="mt-6"
+                  >
+                    <AnimatePresence mode="wait">
+                      {!showMemoryTip ? (
+                        <motion.button
+                          key="collapsed"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          onClick={() => setShowMemoryTip(true)}
+                          className="w-full glass rounded-2xl p-3 border border-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-2 group"
+                        >
+                          <span className="text-xl">💡</span>
+                          <span className="text-xs text-white/60 group-hover:text-white/80 transition-colors font-medium">
+                            Tip: How memory works
+                          </span>
+                        </motion.button>
+                      ) : (
+                        <motion.div
+                          key="expanded"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="glass rounded-2xl p-4 border border-white/10 overflow-hidden"
+                        >
+                          <div className="flex items-start gap-3">
+                            <span className="text-2xl flex-shrink-0 mt-0.5">💡</span>
+                            <div className="flex-1">
+                              <h3 className="text-sm font-semibold text-white mb-1">
+                                ThoughtFull Dreams Keeps Memories
+                              </h3>
+                              <p className="text-xs text-white/70 leading-relaxed">
+                                Your dreams are connected! If you're recording a new dream, 
+                                mention <span className="text-electric-cyan font-medium">"this is a new dream"</span> to 
+                                start fresh. Otherwise, we'll continue from where your last dream left off.
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => setShowMemoryTip(false)}
+                              className="text-white/40 hover:text-white/80 transition-colors text-xl leading-none flex-shrink-0"
+                              aria-label="Close tip"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                </>
               )}
 
               {step === "generating" && (

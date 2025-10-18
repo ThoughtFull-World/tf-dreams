@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/lib/auth-context";
 import Button from "@/components/Button";
 import ShareButtons from "@/components/ShareButtons";
-import { ArrowLeftIcon, SparklesIcon } from "@/components/Icons";
+import { SparklesIcon } from "@/components/Icons";
 import { createBrowserClient } from "@supabase/ssr";
 
 interface Dream {
@@ -101,41 +101,17 @@ export default function LibraryPage() {
       <div className="w-full max-w-4xl mx-auto flex-1">
         {/* Header */}
         <motion.div
-          className="flex items-center justify-between mb-8"
+          className="mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div>
-            <h1 className="text-5xl md:text-6xl font-black mb-2 font-[family-name:var(--font-space-grotesk)] text-white">
-              Your Dreams
-            </h1>
-            <p className="text-lg text-white/60 font-medium">
-              Welcome back, <span className="text-electric-cyan">{user?.username || user?.email}</span>
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Buttons */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mb-6 flex gap-3"
         >
-          <Button
-            onClick={() => router.push("/")}
-            variant="secondary"
-            icon={<ArrowLeftIcon className="w-5 h-5" />}
-          >
-            Back to Main
-          </Button>
-          <Button
-            onClick={logout}
-            variant="tertiary"
-          >
-            Logout
-          </Button>
+          <h1 className="text-5xl md:text-6xl font-black mb-2 font-[family-name:var(--font-space-grotesk)] text-white">
+            Your Dreams
+          </h1>
+          <p className="text-lg text-white/60 font-medium">
+            Welcome back, <span className="text-electric-cyan">{user?.username || user?.email}</span>
+          </p>
         </motion.div>
 
         {/* Dreams Grid or Empty State */}
@@ -245,32 +221,6 @@ export default function LibraryPage() {
             >
               Create Your First Dream
             </Button>
-          </motion.div>
-        )}
-
-        {/* Info Section - Only show if there are dreams */}
-        {dreams.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mt-12 glass rounded-2xl p-6 mb-12"
-          >
-            <h2 className="text-lg font-semibold text-white mb-3">
-              💡 Tips
-            </h2>
-            <p className="text-white/70 text-sm mb-4">
-              Hover over dream cards to preview videos!
-            </p>
-            <p className="text-white/70 text-sm">
-              Coming soon:
-            </p>
-            <ul className="mt-2 space-y-2 text-sm text-white/60">
-              <li>🏷️ Tag and organize your dreams</li>
-              <li>📊 Dream analytics</li>
-              <li>🔗 Share with friends</li>
-              <li>🔍 Search and filter</li>
-            </ul>
           </motion.div>
         )}
       </div>
