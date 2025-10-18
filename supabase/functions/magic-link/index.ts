@@ -82,7 +82,7 @@ serve(async (req: Request) => {
     console.log(`Sending magic link to: ${email}`);
 
     // Determine redirect URL based on environment
-    const redirectTo = "http://localhost:3000/auth/callback";
+    const redirectTo = "http://localhost:3000";
 
     // Send magic link
     const { error } = await supabase.auth.signInWithOtp({
