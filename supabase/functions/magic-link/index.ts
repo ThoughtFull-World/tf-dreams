@@ -31,14 +31,14 @@ serve(async (req: Request) => {
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    if (!supabaseUrl || !supabaseAnonKey) {
+    if (!supabaseUrl || !supabaseServiceKey) {
       throw new Error("Missing Supabase environment variables");
     }
 
-    // Create Supabase client (using anon key for auth)
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    // Create Supabase client (using service role key for auth functions)
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Parse request body
     const body: MagicLinkRequest = await req.json();
