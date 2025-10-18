@@ -239,13 +239,17 @@ export async function startPipeline(dreamId: string): Promise<void> {
  */
 export async function getRandomVideo(): Promise<string | null> {
   try {
-    const url = `${supabaseUrl}/functions/v1/get-random-video`;
+    // Add cache buster to ensure fresh video on each call
+    const cacheBuster = `t=${Date.now()}`;
+    const url = `${supabaseUrl}/functions/v1/get-random-video?${cacheBuster}`;
     console.log("🌐 Calling get-random-video:", url);
     
     const response = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
       },
+      // Add cache control headers to force fresh fetch
+      cache: "no-store",
     });
 
     console.log("📡 Response status:", response.status);
