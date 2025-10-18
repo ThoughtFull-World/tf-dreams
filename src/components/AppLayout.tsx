@@ -40,7 +40,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {isLibraryPage && (
         <motion.button
           onClick={() => router.push("/")}
-          className="fixed top-4 left-4 z-[60] p-3 rounded-full hover:bg-white/10 transition-all backdrop-blur-md bg-white/5 border border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60"
+          className="fixed top-3 left-3 sm:top-4 sm:left-4 z-[60] p-2 sm:p-3 rounded-full hover:bg-white/10 transition-all backdrop-blur-md bg-white/5 border border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
@@ -48,13 +48,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           whileTap={{ scale: 0.95 }}
           aria-label="Back to home"
         >
-          <ArrowLeftIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+          <ArrowLeftIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </motion.button>
       )}
 
       {/* User Icon Header */}
       <motion.header 
-        className="fixed top-0 left-0 right-0 z-50 px-4 py-3 md:px-6 md:py-4"
+        className="fixed top-0 left-0 right-0 z-50 px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
@@ -103,14 +103,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Footer */}
       <motion.footer 
-        className="fixed bottom-0 left-0 right-0 z-50 px-4 py-3 md:px-6 md:py-4 bg-gradient-to-t from-dark-900 via-dark-900/50 to-transparent"
+        className="fixed bottom-0 left-0 right-0 z-50 px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 bg-gradient-to-t from-dark-900 via-dark-900/50 to-transparent"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
       >
         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-white/40 text-xs md:text-sm font-medium flex items-center justify-center gap-1">
-            Made with <HeartIcon className="w-3.5 h-3.5 text-red-400" /> at Cursor Hackathon SG '25
+          <p className="text-white/40 text-[10px] sm:text-xs md:text-sm font-medium flex items-center justify-center gap-1">
+            Made with <HeartIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-400" /> at Cursor Hackathon SG '25
           </p>
         </div>
       </motion.footer>

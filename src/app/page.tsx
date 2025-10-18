@@ -258,7 +258,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="flex h-screen flex-col items-center justify-center p-4 md:p-6 relative z-10 overflow-y-auto overflow-x-hidden">
+    <main className="flex h-screen flex-col items-center justify-center p-3 sm:p-4 md:p-6 relative z-10 overflow-y-auto overflow-x-hidden">
       {/* Background Video - Only on record step */}
       {step === "record" && (
         <>
@@ -290,13 +290,13 @@ export default function HomePage() {
       >
         {/* Header - consistent size */}
         <motion.div 
-          className="text-center mb-6 md:mb-10"
+          className="text-center mb-4 sm:mb-6 md:mb-10"
           animate={{ 
             y: step === "complete" ? -10 : 0,
           }}
           transition={{ type: "spring", stiffness: 200 }}
         >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-2 md:mb-3 font-[family-name:var(--font-space-grotesk)] text-white">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-2 md:mb-3 font-[family-name:var(--font-space-grotesk)] text-white px-2">
             ThoughtFull Dreams
           </h1>
           <AnimatePresence mode="wait">
@@ -305,7 +305,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="text-lg text-white/60 font-medium"
+              className="text-base sm:text-lg text-white/60 font-medium px-2"
             >
               {step === "record" && "Record your dream to begin"}
               {step === "generating" && "Creating your dream video..."}
@@ -656,7 +656,7 @@ export default function HomePage() {
               {/* Share Options - Glass Icon Buttons - Hide in fullscreen */}
               {!isFullscreen && (
                 <motion.div
-                  className="flex justify-center gap-4 mt-8"
+                  className="flex justify-center gap-3 sm:gap-4 mt-6 sm:mt-8"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
@@ -665,36 +665,36 @@ export default function HomePage() {
                 <motion.button
                   aria-label="Share to Instagram"
                   onClick={handleInstagramShare}
-                  className="glass-frosted rounded-2xl p-4 hover:bg-white/10 transition-all backdrop-blur-xl bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900"
+                  className="glass-frosted rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-white/10 transition-all backdrop-blur-xl bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   title="Share to Instagram"
                 >
-                  <InstagramIcon className="w-8 h-8 text-white" />
+                  <InstagramIcon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </motion.button>
 
                 {/* TikTok */}
                 <motion.button
                   aria-label="Share to TikTok"
                   onClick={handleTikTokShare}
-                  className="glass-frosted rounded-2xl p-4 hover:bg-white/10 transition-all backdrop-blur-xl bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900"
+                  className="glass-frosted rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-white/10 transition-all backdrop-blur-xl bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   title="Share to TikTok"
                 >
-                  <TikTokIcon className="w-8 h-8 text-white" />
+                  <TikTokIcon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </motion.button>
 
                 {/* Copy Link */}
                 <motion.button
                   aria-label="Copy share link"
                   onClick={handleCopyLink}
-                  className="glass-frosted rounded-2xl p-4 hover:bg-white/10 transition-all backdrop-blur-xl bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900"
+                  className="glass-frosted rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-white/10 transition-all backdrop-blur-xl bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   title="Copy Link"
                 >
-                  <LinkIcon className="w-8 h-8 text-white" />
+                  <LinkIcon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </motion.button>
               </motion.div>
               )}
@@ -709,7 +709,7 @@ export default function HomePage() {
               >
                 {/* Glow background */}
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-electric-purple via-electric-magenta to-electric-cyan rounded-2xl blur-xl opacity-50"
+                  className="absolute inset-0 bg-gradient-to-r from-electric-purple via-electric-magenta to-electric-cyan rounded-xl sm:rounded-2xl blur-xl opacity-50"
                   animate={{
                     opacity: [0.3, 0.6, 0.3],
                   }}
@@ -722,7 +722,7 @@ export default function HomePage() {
                 
                 <motion.button
                   onClick={handleRetry}
-                  className="relative w-full py-4 px-8 rounded-2xl font-bold text-lg bg-gradient-to-r from-electric-purple via-electric-magenta to-electric-cyan text-white shadow-2xl flex items-center justify-center gap-3"
+                  className="relative w-full py-3 px-6 sm:py-4 sm:px-8 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg bg-gradient-to-r from-electric-purple via-electric-magenta to-electric-cyan text-white shadow-2xl flex items-center justify-center gap-2 sm:gap-3"
                   whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 400, damping: 20 }}
@@ -731,9 +731,10 @@ export default function HomePage() {
                     animate={{ rotate: 360 }}
                     transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                   >
-                    <SparklesIcon className="w-6 h-6" />
+                    <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </motion.div>
-                  Create Another Dream
+                  <span className="hidden sm:inline">Create Another Dream</span>
+                  <span className="sm:hidden">New Dream</span>
                   <motion.div
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -750,15 +751,15 @@ export default function HomePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.8 }}
-                  className="glass rounded-2xl p-6 text-center"
+                  className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center"
                 >
-                  <h3 className="text-xl font-bold text-white mb-2">
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
                     Save Your Dream ✨
                   </h3>
-                  <p className="text-white/70 mb-4">
+                  <p className="text-sm sm:text-base text-white/70 mb-3 sm:mb-4">
                     Sign in or create an account to save and access all your recorded dreams from anywhere.
                   </p>
-                  <p className="text-sm text-white/50 mb-4">
+                  <p className="text-xs sm:text-sm text-white/50 mb-3 sm:mb-4">
                     Build your personal dream library and revisit your creative moments anytime.
                   </p>
                   <div className="flex gap-3 justify-center">

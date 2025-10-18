@@ -97,19 +97,19 @@ export default function LibraryPage() {
   }
 
   return (
-    <main className="flex flex-col min-h-screen p-4 md:p-6 relative z-10 pt-20">
-      <div className="w-full max-w-4xl mx-auto flex-1">
+    <main className="flex flex-col min-h-screen p-3 sm:p-4 md:p-6 relative z-10 pt-16 sm:pt-20">
+      <div className="w-full max-w-6xl mx-auto flex-1">
         {/* Header */}
         <motion.div
-          className="mb-8"
+          className="mb-6 sm:mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h1 className="text-5xl md:text-6xl font-black mb-2 font-[family-name:var(--font-space-grotesk)] text-white">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-2 font-[family-name:var(--font-space-grotesk)] text-white">
             Your Dreams
           </h1>
-          <p className="text-lg text-white/60 font-medium">
+          <p className="text-sm sm:text-base md:text-lg text-white/60 font-medium break-words">
             Welcome back, <span className="text-electric-cyan">{user?.username || user?.email}</span>
           </p>
         </motion.div>
@@ -132,7 +132,7 @@ export default function LibraryPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-12"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 pb-12"
           >
             {dreams.map((dream, index) => (
               <motion.div
@@ -140,7 +140,7 @@ export default function LibraryPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + index * 0.1 }}
-                className="glass-frosted rounded-2xl p-6 hover:brightness-110 transition-all cursor-pointer group"
+                className="glass-frosted rounded-2xl p-4 sm:p-6 hover:brightness-110 transition-all cursor-pointer group"
               >
                 {/* Video or Placeholder */}
                 <div className="relative aspect-video mb-4 rounded-xl bg-gradient-to-br from-electric-purple/20 to-electric-cyan/20 border border-white/10 overflow-hidden">
@@ -182,10 +182,10 @@ export default function LibraryPage() {
                 </div>
 
                 {/* Dream Info */}
-                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-electric-cyan transition-colors line-clamp-2">
+                <h3 className="text-base sm:text-lg font-bold text-white mb-2 group-hover:text-electric-cyan transition-colors line-clamp-2">
                   {dream.transcript?.substring(0, 50) || "Untitled Dream"}
                 </h3>
-                <p className="text-sm text-white/60 mb-4">
+                <p className="text-xs sm:text-sm text-white/60 mb-3 sm:mb-4">
                   {new Date(dream.created_at).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
