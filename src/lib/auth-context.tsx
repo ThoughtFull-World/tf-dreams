@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 
 interface User {
@@ -23,54 +23,83 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Create Supabase client outside component to prevent recreation
+const createSupabaseClient = () => {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+  );
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
 
-  // Initialize Supabase client
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
-  );
+  // Memoize supabase client
+  const supabase = useMemo(() => createSupabaseClient(), []);
 
-  // Load user from Supabase session on mount
+  // Initialize auth and listen for changes
   useEffect(() => {
+    let isMounted = true;
+
     const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          setUser({
-            id: session.user.id,
-            email: session.user.email || "",
-            username: session.user.user_metadata?.username,
-          });
+        console.log("🔐 Initializing auth...");
+        
+        // Get current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("❌ Session error:", sessionError);
+        }
+        
+        if (isMounted) {
+          if (session?.user) {
+            console.log("✅ User session found:", session.user.email);
+            setUser({
+              id: session.user.id,
+              email: session.user.email || "",
+              username: session.user.user_metadata?.username,
+            });
+          } else {
+            console.log("ℹ️ No session found");
+          }
         }
       } catch (error) {
-        console.error("Failed to initialize auth:", error);
+        console.error("❌ Failed to initialize auth:", error);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     initializeAuth();
 
-    // Subscribe to auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email || "",
-          username: session.user.user_metadata?.username,
-        });
-      } else {
-        setUser(null);
+    // Subscribe to auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log("🔄 Auth state changed:", event);
+        
+        if (isMounted) {
+          if (session?.user) {
+            console.log("✅ User authenticated:", session.user.email);
+            setUser({
+              id: session.user.id,
+              email: session.user.email || "",
+              username: session.user.user_metadata?.username,
+            });
+          } else {
+            console.log("ℹ️ User logged out");
+            setUser(null);
+          }
+        }
       }
-    });
+    );
 
     return () => {
+      isMounted = false;
       subscription?.unsubscribe();
     };
   }, [supabase]);
