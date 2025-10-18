@@ -66,10 +66,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             className="rounded-full p-2 md:p-3 hover:bg-white/10 transition-all backdrop-blur-md bg-white/5 border border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            aria-label={isAuthenticated ? `Logout (${user?.email})` : "Sign in to your account"}
+            aria-label={isAuthenticated ? `Account (${user?.email})` : "Sign in to your account"}
             title={isAuthenticated ? `Logout (${user?.email})` : "Sign In"}
           >
-            <UserIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            {isAuthenticated && user?.email ? (
+              // Show user initial when logged in
+              <div className="w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-white font-bold text-sm">
+                {user.email.charAt(0).toUpperCase()}
+              </div>
+            ) : (
+              // Show user icon when logged out
+              <UserIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            )}
           </motion.button>
         </div>
       </motion.header>
