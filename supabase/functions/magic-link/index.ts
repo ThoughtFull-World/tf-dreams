@@ -81,6 +81,12 @@ serve(async (req: Request) => {
 
     console.log(`Sending magic link to: ${email}`);
 
+    // Log all environment variables for debugging
+    console.log("Environment variables:");
+    console.log("- SITE_URL:", Deno.env.get("SITE_URL"));
+    console.log("- SUPABASE_URL:", Deno.env.get("SUPABASE_URL"));
+    console.log("- All env keys:", Object.keys(Deno.env.toObject()).join(", "));
+
     // Determine redirect URL based on environment
     // Check for SITE_URL env var first, then fall back to localhost for development
     const siteUrl = Deno.env.get("SITE_URL") || "http://localhost:3000";
