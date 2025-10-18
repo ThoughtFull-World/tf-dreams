@@ -6,7 +6,7 @@ import Recorder from "@/components/Recorder";
 import ProgressSteps from "@/components/ProgressSteps";
 import Button from "@/components/Button";
 import { SparklesIcon, LinkIcon, RefreshIcon, InstagramIcon, TikTokIcon, FullscreenIcon, PlayIcon, CloseIcon } from "@/components/Icons";
-import { uploadAudioAndCreateDream, startPipeline } from "@/lib/api";
+import { processDream, generateVideo, pollForVideo } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 
 type Step = "record" | "generating" | "complete";
@@ -16,7 +16,11 @@ export default function HomePage() {
   const [step, setStep] = useState<Step>("record");
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [dreamId, setDreamId] = useState<string | null>(null);
+  const [storyNodeId, setStoryNodeId] = useState<string | null>(null);
   const [shareToken, setShareToken] = useState<string | null>(null);
+  const [transcript, setTranscript] = useState<string>("");
+  const [story, setStory] = useState<string>("");
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [currentPipelineStep, setCurrentPipelineStep] = useState<PipelineStep>("transcribe");
   const [showRetry, setShowRetry] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -25,42 +29,93 @@ export default function HomePage() {
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, signInAnonymously } = useAuth();
 
   const handleRecordingComplete = async (blob: Blob) => {
     setAudioBlob(blob);
-    // Immediately transition to generation - no delay
+    
+    // Ensure user is authenticated (anonymously if needed)
+    if (!isAuthenticated) {
+      try {
+        console.log("🔐 Signing in anonymously...");
+        await signInAnonymously();
+      } catch (error) {
+        console.error("Failed to authenticate:", error);
+        setShowRetry(true);
+        alert("Failed to authenticate. Please try again.");
+        return;
+      }
+    }
+    
+    // Immediately transition to generation
     startGeneration(blob);
   };
 
   const startGeneration = async (blob: Blob) => {
-    setStep("generating");
-    setShowRetry(false);
-    
-    const dream = await uploadAudioAndCreateDream(blob);
-    setDreamId(dream.id);
-    
-    setCurrentPipelineStep("transcribe");
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setCurrentPipelineStep("story");
-    await new Promise(resolve => setTimeout(resolve, 2500));
-    
-    setCurrentPipelineStep("video");
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    setCurrentPipelineStep("ready");
-    await startPipeline(dream.id);
-    
-    setShareToken(`dream-${Date.now()}`);
-    setStep("complete");
+    try {
+      setStep("generating");
+      setShowRetry(false);
+      
+      // Step 1: Transcribe audio & generate story
+      console.log("🎤 Starting transcription...");
+      setCurrentPipelineStep("transcribe");
+      
+      // Call process-dream API (transcription + story generation)
+      const result = await processDream(blob);
+      
+      setDreamId(result.dreamId);
+      setStoryNodeId(result.storyNodeId);
+      setTranscript(result.transcript);
+      setStory(result.story);
+      
+      console.log("📝 Transcription complete:", result.transcript);
+      
+      // Step 2: Story generation (already done in processDream)
+      console.log("✨ Story generation complete");
+      setCurrentPipelineStep("story");
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Step 3: Explicitly trigger video generation from UI
+      console.log("🎥 Triggering video generation from UI...");
+      setCurrentPipelineStep("video");
+      
+      // Trigger video generation
+      await generateVideo(result.storyNodeId);
+      console.log("✅ Video generation request sent");
+      
+      // Poll for video completion
+      const video = await pollForVideo(result.storyNodeId, (secondsElapsed) => {
+        console.log(`⏳ Waiting for video... ${secondsElapsed}s elapsed`);
+      });
+      
+      if (video) {
+        setVideoUrl(video);
+        console.log("✅ Video ready:", video);
+      } else {
+        console.warn("⚠️ Video generation timeout or failed");
+      }
+      
+      // Step 4: Complete
+      setCurrentPipelineStep("ready");
+      setShareToken(result.dreamId);
+      setStep("complete");
+      
+    } catch (error) {
+      console.error("❌ Dream generation failed:", error);
+      setShowRetry(true);
+      alert("Failed to generate dream. Please try again.");
+    }
   };
 
   const handleRetry = () => {
     setStep("record");
     setAudioBlob(null);
     setDreamId(null);
+    setStoryNodeId(null);
     setShareToken(null);
+    setTranscript("");
+    setStory("");
+    setVideoUrl(null);
     setCurrentPipelineStep("transcribe");
     setShowRetry(false);
   };
@@ -311,18 +366,34 @@ export default function HomePage() {
                   />
 
                   {/* Video Element */}
-                  <video
-                    ref={videoRef}
-                    className="w-full h-full object-cover"
-                    src="https://dreams.thoughtfull.world/videos/81c771d6-e4c4-4ffe-882e-d113a00480d3/ecfee84f-e6a4-495f-9fde-62bab741f8f9/c778cf59-c8ad-4c7a-935d-94185f6ebebb.mp4"
-                    onPlay={() => setIsPlaying(true)}
-                    onPause={() => setIsPlaying(false)}
-                    muted
-                    loop
-                  />
+                  {videoUrl ? (
+                    <video
+                      ref={videoRef}
+                      className="w-full h-full object-cover"
+                      src={videoUrl}
+                      onPlay={() => setIsPlaying(true)}
+                      onPause={() => setIsPlaying(false)}
+                      muted
+                      loop
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-electric-purple/20 to-electric-cyan/20">
+                      <div className="text-center p-8">
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                          className="w-16 h-16 mx-auto mb-4"
+                        >
+                          <SparklesIcon className="w-full h-full text-white/60" />
+                        </motion.div>
+                        <p className="text-white/80 font-medium">Generating your dream video...</p>
+                        <p className="text-white/40 text-sm mt-2">This may take a minute</p>
+                      </div>
+                    </div>
+                  )}
 
-                  {/* Play button overlay - only show when not playing */}
-                  {!isPlaying && (
+                  {/* Play button overlay - only show when not playing and video is ready */}
+                  {!isPlaying && videoUrl && (
                     <div className="absolute inset-0 flex items-center justify-center z-10">
                       <motion.div
                         onClick={handlePlayVideo}

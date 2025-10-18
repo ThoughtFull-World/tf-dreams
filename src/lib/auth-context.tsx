@@ -15,6 +15,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, username?: string) => Promise<void>;
+  signInAnonymously: () => Promise<void>;
   sendMagicLink: (email: string) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: User | null) => void;
@@ -155,6 +156,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInAnonymously = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInAnonymously();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data.user) {
+        setUser({
+          id: data.user.id,
+          email: data.user.email || `anonymous-${data.user.id.slice(0, 8)}`,
+          username: "Guest",
+        });
+      }
+    } catch (error) {
+      console.error("Anonymous sign-in failed:", error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const sendMagicLink = async (email: string) => {
     setIsLoading(true);
     setMagicLinkSent(false);
@@ -214,6 +239,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: !!user,
         login,
         signup,
+        signInAnonymously,
         sendMagicLink,
         logout,
         setUser,

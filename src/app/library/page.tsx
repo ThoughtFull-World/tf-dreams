@@ -12,6 +12,8 @@ interface Dream {
   id: string;
   transcript: string;
   created_at: string;
+  video_url?: string;
+  story_content?: string;
 }
 
 export default function LibraryPage() {
@@ -40,7 +42,15 @@ export default function LibraryPage() {
 
         const { data, error } = await supabase
           .from("dreams")
-          .select("id, transcript, created_at")
+          .select(`
+            id,
+            transcript,
+            created_at,
+            story_nodes (
+              video_url,
+              content
+            )
+          `)
           .eq("user_id", user.id)
           .order("created_at", { ascending: false });
 
@@ -48,7 +58,15 @@ export default function LibraryPage() {
           console.error("Error fetching dreams:", error);
           setDreams([]);
         } else {
-          setDreams(data || []);
+          // Transform data to flatten story_nodes
+          const transformedData = (data || []).map((dream: any) => ({
+            id: dream.id,
+            transcript: dream.transcript,
+            created_at: dream.created_at,
+            video_url: dream.story_nodes?.[0]?.video_url || null,
+            story_content: dream.story_nodes?.[0]?.content || null,
+          }));
+          setDreams(transformedData);
         }
       } catch (err) {
         console.error("Error fetching dreams:", err);
@@ -147,20 +165,39 @@ export default function LibraryPage() {
                 transition={{ delay: 0.4 + index * 0.1 }}
                 className="glass-frosted rounded-2xl p-6 hover:brightness-110 transition-all cursor-pointer group"
               >
-                {/* Video Placeholder */}
-                <div className="relative aspect-video mb-4 rounded-xl bg-gradient-to-br from-electric-purple/20 to-electric-cyan/20 border border-white/10 flex items-center justify-center overflow-hidden">
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-electric-purple/10 via-electric-cyan/10 to-electric-magenta/10"
-                    animate={{ opacity: [0.1, 0.2, 0.1] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  />
-                  <motion.div
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="relative z-10"
-                  >
-                    <SparklesIcon className="w-12 h-12 text-electric-cyan" />
-                  </motion.div>
+                {/* Video or Placeholder */}
+                <div className="relative aspect-video mb-4 rounded-xl bg-gradient-to-br from-electric-purple/20 to-electric-cyan/20 border border-white/10 overflow-hidden">
+                  {dream.video_url ? (
+                    <video
+                      src={dream.video_url}
+                      className="w-full h-full object-cover"
+                      muted
+                      loop
+                      onMouseEnter={(e) => e.currentTarget.play()}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.pause();
+                        e.currentTarget.currentTime = 0;
+                      }}
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-electric-purple/10 via-electric-cyan/10 to-electric-magenta/10"
+                        animate={{ opacity: [0.1, 0.2, 0.1] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      />
+                      <motion.div
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="relative z-10"
+                      >
+                        <SparklesIcon className="w-12 h-12 text-electric-cyan" />
+                      </motion.div>
+                      <div className="absolute bottom-2 right-2 text-xs text-white/40 bg-black/40 px-2 py-1 rounded">
+                        Generating...
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Dream Info */}
@@ -206,16 +243,19 @@ export default function LibraryPage() {
             className="mt-12 glass rounded-2xl p-6 mb-12"
           >
             <h2 className="text-lg font-semibold text-white mb-3">
-              Coming Soon
+              💡 Tips
             </h2>
-            <p className="text-white/70 text-sm">
-              More features for your dream library:
+            <p className="text-white/70 text-sm mb-4">
+              Hover over dream cards to preview videos!
             </p>
-            <ul className="mt-4 space-y-2 text-sm text-white/60">
-              <li>✨ Watch your dream videos</li>
+            <p className="text-white/70 text-sm">
+              Coming soon:
+            </p>
+            <ul className="mt-2 space-y-2 text-sm text-white/60">
               <li>🏷️ Tag and organize your dreams</li>
               <li>📊 Dream analytics</li>
               <li>🔗 Share with friends</li>
+              <li>🔍 Search and filter</li>
             </ul>
           </motion.div>
         )}
