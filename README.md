@@ -13,8 +13,8 @@ ThoughtFull Dreams is an innovative web application that turns your dream record
 ## 🎯 Features
 
 - 🎤 **Voice Recording**: Speak your dreams naturally (up to 60 seconds)
-- 🤖 **AI Story Generation**: Transform voice into coherent narratives using Claude
-- 🎬 **Video Creation**: Generate stunning videos with Luma AI
+- 🤖 **AI Story Generation**: Transform voice into coherent narratives using OpenAI GPT-4
+- 🎬 **Video Creation**: Generate stunning videos with Fal.ai
 - 📚 **Dream Library**: Access all your past dreams with magic link authentication
 - 🔗 **Social Sharing**: Share your dream videos with a unique link
 - 🎨 **Beautiful UI**: Glassmorphic design with smooth animations
@@ -31,8 +31,9 @@ ThoughtFull Dreams is an innovative web application that turns your dream record
 - Supabase CLI
 - Supabase account
 - Cloudflare R2 account (for video storage)
+- ElevenLabs API key
 - OpenAI API key
-- Anthropic API key
+- Fal.ai API key
 
 ### Installation
 
@@ -125,9 +126,9 @@ tf-dreams/
 - **Supabase** - PostgreSQL database & auth
 - **Edge Functions** - Serverless Deno functions
 - **Cloudflare R2** - Video & audio storage
-- **OpenAI Whisper** - Speech-to-text
-- **Anthropic Claude** - Story generation
-- **Luma AI** - Video generation
+- **ElevenLabs** - Speech-to-text transcription
+- **OpenAI GPT-4** - Story generation
+- **Fal.ai** - Video generation
 
 ### Deployment
 - **Vercel** - Frontend hosting
@@ -189,11 +190,11 @@ See [`docs/setup/MAGIC_LINK_SETUP.md`](./docs/setup/MAGIC_LINK_SETUP.md) for con
 ```
 1. 🎤 Record Audio (60s max)
    ↓
-2. 📝 Transcribe with Whisper
+2. 📝 Transcribe with ElevenLabs
    ↓
-3. 🤖 Generate Story with Claude
+3. 🤖 Generate Story with OpenAI GPT-4
    ↓
-4. 🎬 Create Video with Luma AI
+4. 🎬 Create Video with Fal.ai
    ↓
 5. ☁️ Store in Cloudflare R2
    ↓
@@ -212,9 +213,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 
 ### Supabase Edge Functions
 ```env
+ELEVENLABS_API_KEY=...
 OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
-LUMA_API_KEY=luma_...
+FAL_API_KEY=...
 R2_ENDPOINT=https://...
 R2_ACCESS_KEY_ID=...
 R2_SECRET_ACCESS_KEY=...
@@ -247,9 +248,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Cursor Hackathon SG '25** - For the inspiration and deadline
 - **Supabase** - For the amazing backend platform
-- **Luma AI** - For stunning video generation
-- **Anthropic** - For Claude AI storytelling
-- **OpenAI** - For Whisper transcription
+- **Fal.ai** - For stunning video generation
+- **OpenAI** - For GPT-4 storytelling
+- **ElevenLabs** - For audio transcription
 
 ---
 
