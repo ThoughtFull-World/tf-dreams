@@ -47,7 +47,7 @@ async function generateVideo(storyContent: string): Promise<Uint8Array> {
     body: JSON.stringify({
       prompt: promptForVideo,
       negative_prompt: "ugly, blurry, low quality, distorted, deformed, artifacts",
-      num_frames: 40,              // 5 seconds at 8 fps (increased from 12)
+      num_frames: 32,              // 4 seconds at 8 fps (max supported by model)
       num_inference_steps: 6,      // Optimized for speed
       guidance_scale: 6.0,         // Balanced quality vs speed
       fps: 8,                      // 8 frames per second
