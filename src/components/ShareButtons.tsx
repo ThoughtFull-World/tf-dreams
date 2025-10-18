@@ -69,8 +69,8 @@ export default function ShareButtons({
       // Check if browser supports file sharing
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
-          title: "ThoughtFull Dreams",
-          text: `${dreamTitle}\n\n${defaultShareUrl}`,
+          title: dreamTitle,
+          text: defaultShareUrl, // Just the URL, prevents double link in messages
           files: [file],
         });
         return true;
@@ -107,125 +107,62 @@ export default function ShareButtons({
     lg: "text-base",
   };
 
-  // Enhanced Instagram sharing - Stories and Posts
+  // Simplified Instagram sharing - Download & Copy approach
   const handleInstagramShare = onInstagram || (async () => {
-    const shareText = `${dreamTitle}\n\n${defaultShareUrl}`;
+    // Strategy: Download video (if available) + copy link
+    // User manually uploads to Instagram (no API registration needed)
     
-    // Strategy 1: Instagram Stories (Mobile with video URL)
-    if (videoUrl && isMobile()) {
-      try {
-        // For mobile, try Instagram Stories intent
-        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-        const isAndroid = /Android/i.test(navigator.userAgent);
-        
-        if (isIOS || isAndroid) {
-          // Copy caption for user to paste
-          await navigator.clipboard.writeText(shareText);
-          
-          // Try to open Instagram app directly to camera/story
-          window.location.href = "instagram://story-camera";
-          
-          // Show instructions
-          setTimeout(() => {
-            alert("📸 Instagram opened!\n\n1. Upload your video\n2. Paste caption from clipboard\n3. Share to Story or Post");
-          }, 500);
-          
-          return;
-        }
-      } catch (error) {
-        console.log("Instagram app link failed, trying alternative");
-      }
-    }
-    
-    // Strategy 2: Download video + copy caption (Desktop with video)
-    if (videoUrl && !isMobile()) {
+    if (videoUrl) {
+      // Has video - download it
       const downloaded = await downloadVideo();
       if (downloaded) {
-        await navigator.clipboard.writeText(shareText);
-        alert("✅ Video downloaded!\n📋 Caption copied!\n\n📸 Next steps:\n1. Open Instagram\n2. Create new Reel or Post\n3. Upload the downloaded video\n4. Paste caption");
-        window.open("https://www.instagram.com/", "_blank");
+        await navigator.clipboard.writeText(dreamTitle);
+        alert("✅ Video downloaded!\n📋 Caption copied!\n\n📸 Next:\n1. Open Instagram app/web\n2. Create Reel or Post\n3. Upload the video\n4. Paste caption\n\n💡 Tip: Add #ThoughtFullDreams");
+        if (!isMobile()) {
+          window.open("https://www.instagram.com/", "_blank");
+        }
         return;
       }
     }
     
-    // Strategy 3: Mobile without video - direct to Instagram
-    if (isMobile()) {
-      await navigator.clipboard.writeText(shareText);
-      // Try to open Instagram to post creation
-      window.location.href = "instagram://library?AssetPath=";
-      setTimeout(() => {
-        window.open("https://www.instagram.com/", "_blank");
-      }, 1000);
-      return;
+    // No video or download failed - just copy link
+    await navigator.clipboard.writeText(`${dreamTitle}\n\n${defaultShareUrl}`);
+    alert("📋 Copied to clipboard!\n\n👉 Open Instagram and paste in your story or post.");
+    if (!isMobile()) {
+      window.open("https://www.instagram.com/", "_blank");
     }
-    
-    // Strategy 4: Desktop fallback
-    await navigator.clipboard.writeText(shareText);
-    alert("📋 Link copied!\n\n👉 Open Instagram and create a post/reel.");
-    window.open("https://www.instagram.com/", "_blank");
   });
 
-  // Enhanced TikTok sharing - Direct to Upload
+  // Simplified TikTok sharing - Download & Copy approach
   const handleTikTokShare = onTikTok || (async () => {
-    const shareText = `${dreamTitle}\n${defaultShareUrl}`;
+    // Strategy: Download video (if available) + copy caption
+    // User manually uploads to TikTok (no API registration needed)
     
-    // Strategy 1: TikTok Upload (Mobile with video URL)
-    if (videoUrl && isMobile()) {
-      try {
-        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-        const isAndroid = /Android/i.test(navigator.userAgent);
-        
-        if (isIOS || isAndroid) {
-          // Copy caption for user to paste
-          await navigator.clipboard.writeText(shareText);
-          
-          // Try to open TikTok app directly to upload screen
-          // TikTok intent for upload
-          window.location.href = "tiktok://upload";
-          
-          // Show instructions
-          setTimeout(() => {
-            alert("🎵 TikTok opened!\n\n1. Upload your video\n2. Paste caption from clipboard\n3. Add effects and post");
-          }, 500);
-          
-          return;
-        }
-      } catch (error) {
-        console.log("TikTok app link failed, trying alternative");
-      }
-    }
-    
-    // Strategy 2: Download video + copy caption (Desktop with video)
-    if (videoUrl && !isMobile()) {
+    if (videoUrl) {
+      // Has video - download it
       const downloaded = await downloadVideo();
       if (downloaded) {
-        await navigator.clipboard.writeText(shareText);
-        alert("✅ Video downloaded!\n📋 Caption copied!\n\n🎵 Next steps:\n1. Open TikTok\n2. Click + to create\n3. Upload the downloaded video\n4. Paste caption and hashtags");
-        window.open("https://www.tiktok.com/upload", "_blank");
+        await navigator.clipboard.writeText(dreamTitle);
+        alert("✅ Video downloaded!\n📋 Caption copied!\n\n🎵 Next:\n1. Open TikTok app/web\n2. Click + to create\n3. Upload the video\n4. Paste caption\n\n💡 Tip: Add #ThoughtFullDreams #DreamVideo");
+        if (!isMobile()) {
+          window.open("https://www.tiktok.com/upload", "_blank");
+        }
         return;
       }
     }
     
-    // Strategy 3: Mobile without video - direct to TikTok upload
-    if (isMobile()) {
-      await navigator.clipboard.writeText(shareText);
-      // Try to open TikTok to upload screen
-      window.location.href = "tiktok://upload";
-      setTimeout(() => {
-        window.open("https://www.tiktok.com/", "_blank");
-      }, 1000);
-      return;
+    // No video or download failed - just copy link
+    await navigator.clipboard.writeText(`${dreamTitle}\n\n${defaultShareUrl}`);
+    alert("📋 Copied to clipboard!\n\n👉 Open TikTok and paste in your video description.");
+    if (!isMobile()) {
+      window.open("https://www.tiktok.com/upload", "_blank");
     }
-    
-    // Strategy 4: Desktop fallback
-    await navigator.clipboard.writeText(shareText);
-    alert("📋 Caption copied!\n\n👉 Open TikTok and upload your video.");
-    window.open("https://www.tiktok.com/upload", "_blank");
   });
 
-  // Copy link to clipboard
+  // Copy link to clipboard (just URL, no duplicate)
   const handleCopyLink = onCopy || (async () => {
     try {
+      // Only copy the URL - link preview will handle the title
       await navigator.clipboard.writeText(defaultShareUrl);
       setCopiedState(true);
       setTimeout(() => setCopiedState(false), 2000);
