@@ -54,14 +54,13 @@ export default function ShareButtons({
 
   // Real Instagram sharing
   const handleInstagramShare = onInstagram || (async () => {
-    const shareText = `${dreamTitle}\n\n${defaultShareUrl}`;
     
     // Try native Web Share API first (works on mobile)
     if (navigator.share) {
       try {
         await navigator.share({
           title: "ThoughtFull Dreams",
-          text: shareText,
+          text: dreamTitle,
           url: defaultShareUrl,
         });
         return;
@@ -77,14 +76,13 @@ export default function ShareButtons({
 
   // Real TikTok sharing
   const handleTikTokShare = onTikTok || (async () => {
-    const shareText = `${dreamTitle}\n${defaultShareUrl}`;
     
     // Try native Web Share API first
     if (navigator.share) {
       try {
         await navigator.share({
           title: "ThoughtFull Dreams",
-          text: shareText,
+          text: dreamTitle,
           url: defaultShareUrl,
         });
         return;

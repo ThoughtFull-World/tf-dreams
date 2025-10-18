@@ -129,14 +129,13 @@ export default function HomePage() {
   const handleInstagramShare = async () => {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     const shareUrl = `${baseUrl}/share/${shareToken}`;
-    const shareText = `Check out my dream video created with ThoughtFull Dreams!\n\n${shareUrl}`;
     
     // Try native Web Share API first (works on mobile)
     if (navigator.share) {
       try {
         await navigator.share({
           title: "ThoughtFull Dreams",
-          text: shareText,
+          text: "Check out my dream video created with ThoughtFull Dreams!",
           url: shareUrl,
         });
         return;
@@ -153,14 +152,13 @@ export default function HomePage() {
   const handleTikTokShare = async () => {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     const shareUrl = `${baseUrl}/share/${shareToken}`;
-    const shareText = `Check out my dream video created with ThoughtFull Dreams!\n${shareUrl}`;
     
     // Try native Web Share API first
     if (navigator.share) {
       try {
         await navigator.share({
           title: "ThoughtFull Dreams",
-          text: shareText,
+          text: "Check out my dream video created with ThoughtFull Dreams!",
           url: shareUrl,
         });
         return;
