@@ -1,0 +1,26 @@
+{
+  "name": "ThoughtFull Dreams",
+  "short_name": "TF Dreams",
+  "description": "Turn your morning dreams into magical videos",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F0F1E",
+  "theme_color": "#7B2FF7",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["entertainment", "lifestyle"],
+  "screenshots": []
+}
+

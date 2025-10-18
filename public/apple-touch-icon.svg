@@ -1,0 +1,25 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <rect width="180" height="180" rx="40" fill="url(#grad1)"/>
+  
+  <!-- Gradient definition -->
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7B2FF7;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF2D87;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00D9FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Large sparkle/star shape in center -->
+  <path d="M90 35 L97 75 L137 82 L97 89 L90 129 L83 89 L43 82 L83 75 Z" fill="white" opacity="0.95"/>
+  
+  <!-- Small sparkles around -->
+  <circle cx="130" cy="50" r="6" fill="white" opacity="0.85"/>
+  <circle cx="50" cy="130" r="6" fill="white" opacity="0.85"/>
+  <circle cx="145" cy="110" r="4" fill="white" opacity="0.75"/>
+  <circle cx="35" cy="70" r="4" fill="white" opacity="0.75"/>
+  <circle cx="120" cy="145" r="3" fill="white" opacity="0.7"/>
+  <circle cx="60" cy="35" r="3" fill="white" opacity="0.7"/>
+</svg>
+

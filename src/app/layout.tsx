@@ -17,6 +17,15 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "ThoughtFull Dreams",
   description: "Turn your morning dreams into magical videos",
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.svg', type: 'image/svg+xml' },
+    ],
+  },
+  manifest: '/site.webmanifest',
 };
 
 export default function RootLayout({
