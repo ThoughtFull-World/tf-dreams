@@ -196,7 +196,9 @@ export default function LibraryPage() {
                 {/* Share Buttons */}
                 <div className="flex justify-center pt-2 border-t border-white/10 mt-4">
                   <ShareButtons 
-                    dreamId={dream.id} 
+                    dreamId={dream.id}
+                    videoUrl={dream.video_url}
+                    dreamTitle={dream.transcript?.substring(0, 100) || "Check out my dream"}
                     size="sm"
                     direction="row"
                   />

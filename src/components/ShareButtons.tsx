@@ -8,6 +8,7 @@ interface ShareButtonsProps {
   dreamId?: string;
   shareUrl?: string;
   dreamTitle?: string;
+  videoUrl?: string; // Video URL for direct sharing
   onInstagram?: () => void;
   onTikTok?: () => void;
   onCopy?: () => void;
@@ -21,6 +22,7 @@ export default function ShareButtons({
   dreamId,
   shareUrl,
   dreamTitle = "Check out my dream video",
+  videoUrl,
   onInstagram,
   onTikTok,
   onCopy,
@@ -32,6 +34,59 @@ export default function ShareButtons({
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   const defaultShareUrl = shareUrl || `${baseUrl}/share/${dreamId || "dream"}`;
   const [copiedState, setCopiedState] = useState(false);
+
+  // Helper: Download video file
+  const downloadVideo = async () => {
+    if (!videoUrl) return false;
+    
+    try {
+      const response = await fetch(videoUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `dream-${dreamId || 'video'}.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      return true;
+    } catch (error) {
+      console.error("Download failed:", error);
+      return false;
+    }
+  };
+
+  // Helper: Share video file via Web Share API
+  const shareVideoFile = async (platform: string) => {
+    if (!videoUrl) return false;
+    
+    try {
+      const response = await fetch(videoUrl);
+      const blob = await response.blob();
+      const file = new File([blob], "dream-video.mp4", { type: "video/mp4" });
+      
+      // Check if browser supports file sharing
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: "ThoughtFull Dreams",
+          text: `${dreamTitle}\n\n${defaultShareUrl}`,
+          files: [file],
+        });
+        return true;
+      }
+    } catch (error) {
+      // User cancelled or not supported
+      return false;
+    }
+    
+    return false;
+  };
+
+  // Helper: Detect mobile
+  const isMobile = () => {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  };
 
   // Size mappings
   const sizeClasses = {
@@ -52,49 +107,77 @@ export default function ShareButtons({
     lg: "text-base",
   };
 
-  // Real Instagram sharing
+  // Enhanced Instagram sharing
   const handleInstagramShare = onInstagram || (async () => {
     const shareText = `${dreamTitle}\n\n${defaultShareUrl}`;
     
-    // Try native Web Share API first (works on mobile)
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "ThoughtFull Dreams",
-          text: shareText,
-          url: defaultShareUrl,
-        });
+    // Strategy 1: Try to share video file directly (mobile with video)
+    if (videoUrl && isMobile()) {
+      const shared = await shareVideoFile("Instagram");
+      if (shared) return; // Success! User can now select Instagram from share sheet
+    }
+    
+    // Strategy 2: Download video + copy caption (desktop with video)
+    if (videoUrl && !isMobile()) {
+      const downloaded = await downloadVideo();
+      if (downloaded) {
+        await navigator.clipboard.writeText(shareText);
+        alert("✅ Video downloaded!\n📋 Caption copied!\n\n👉 Open Instagram and create a new post/reel with the downloaded video.");
+        window.open("https://www.instagram.com/", "_blank");
         return;
-      } catch (error) {
-        // User cancelled or error occurred, continue to fallback
       }
     }
-
-    // Fallback: Open Instagram and copy just the URL to clipboard
-    await navigator.clipboard.writeText(defaultShareUrl);
+    
+    // Strategy 3: Mobile fallback - copy text and guide
+    if (isMobile()) {
+      await navigator.clipboard.writeText(shareText);
+      window.location.href = "instagram://share";
+      setTimeout(() => {
+        window.open("https://www.instagram.com/", "_blank");
+      }, 1000);
+      return;
+    }
+    
+    // Strategy 4: Desktop fallback - just copy and open
+    await navigator.clipboard.writeText(shareText);
+    alert("📋 Link copied to clipboard!\n\n👉 Paste it in Instagram to share.");
     window.open("https://www.instagram.com/", "_blank");
   });
 
-  // Real TikTok sharing
+  // Enhanced TikTok sharing
   const handleTikTokShare = onTikTok || (async () => {
     const shareText = `${dreamTitle}\n${defaultShareUrl}`;
     
-    // Try native Web Share API first
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "ThoughtFull Dreams",
-          text: shareText,
-          url: defaultShareUrl,
-        });
+    // Strategy 1: Try to share video file directly (mobile with video)
+    if (videoUrl && isMobile()) {
+      const shared = await shareVideoFile("TikTok");
+      if (shared) return; // Success! User can now select TikTok from share sheet
+    }
+    
+    // Strategy 2: Download video + copy caption (desktop with video)
+    if (videoUrl && !isMobile()) {
+      const downloaded = await downloadVideo();
+      if (downloaded) {
+        await navigator.clipboard.writeText(shareText);
+        alert("✅ Video downloaded!\n📋 Caption copied!\n\n👉 Open TikTok and create a new post with the downloaded video.");
+        window.open("https://www.tiktok.com/", "_blank");
         return;
-      } catch (error) {
-        // User cancelled or error occurred, continue to fallback
       }
     }
-
-    // Fallback: Open TikTok and copy just the URL to clipboard
-    await navigator.clipboard.writeText(defaultShareUrl);
+    
+    // Strategy 3: Mobile fallback - copy text and guide
+    if (isMobile()) {
+      await navigator.clipboard.writeText(shareText);
+      window.location.href = "tiktok://";
+      setTimeout(() => {
+        window.open("https://www.tiktok.com/", "_blank");
+      }, 1000);
+      return;
+    }
+    
+    // Strategy 4: Desktop fallback - just copy and open
+    await navigator.clipboard.writeText(shareText);
+    alert("📋 Link copied to clipboard!\n\n👉 Paste it in TikTok to share.");
     window.open("https://www.tiktok.com/", "_blank");
   });
 
@@ -163,3 +246,5 @@ export default function ShareButtons({
     </motion.div>
   );
 }
+
+
