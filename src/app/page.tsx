@@ -56,18 +56,13 @@ export default function HomePage() {
   // Fetch random background video on mount
   useEffect(() => {
     const fetchBackgroundVideo = async () => {
-      console.log("🔍 Fetching random background video...");
       try {
         const randomVideoUrl = await getRandomVideo();
-        console.log("📦 Received video URL:", randomVideoUrl);
         if (randomVideoUrl) {
           setBackgroundVideoUrl(randomVideoUrl);
-          console.log("✅ Background video set:", randomVideoUrl);
-        } else {
-          console.warn("⚠️ No video URL returned from getRandomVideo()");
         }
       } catch (error) {
-        console.error("❌ Error fetching background video:", error);
+        console.error("Error fetching background video:", error);
       }
     };
 
@@ -82,7 +77,6 @@ export default function HomePage() {
     // Ensure user is authenticated (anonymously if needed)
     if (!isAuthenticated) {
       try {
-        console.log("🔐 Signing in anonymously...");
         await signInAnonymously();
       } catch (error) {
         console.error("Failed to authenticate:", error);
@@ -102,7 +96,6 @@ export default function HomePage() {
       setShowRetry(false);
       
       // Step 1: Transcribe audio & generate story
-      console.log("🎤 Starting transcription...");
       setCurrentPipelineStep("transcribe");
       
       // Call process-dream API (transcription + story generation)
@@ -113,31 +106,21 @@ export default function HomePage() {
       setTranscript(result.transcript);
       setStory(result.story);
       
-      console.log("📝 Transcription complete:", result.transcript);
-      
       // Step 2: Story generation (already done in processDream)
-      console.log("✨ Story generation complete");
       setCurrentPipelineStep("story");
       await new Promise(resolve => setTimeout(resolve, 500));
       
       // Step 3: Explicitly trigger video generation from UI
-      console.log("🎥 Triggering video generation from UI...");
       setCurrentPipelineStep("video");
       
       // Trigger video generation
       await generateVideo(result.storyNodeId);
-      console.log("✅ Video generation request sent");
       
       // Poll for video completion
-      const video = await pollForVideo(result.storyNodeId, (secondsElapsed) => {
-        console.log(`⏳ Waiting for video... ${secondsElapsed}s elapsed`);
-      });
+      const video = await pollForVideo(result.storyNodeId);
       
       if (video) {
         setVideoUrl(video);
-        console.log("✅ Video ready:", video);
-      } else {
-        console.warn("⚠️ Video generation timeout or failed");
       }
       
       // Step 4: Complete
@@ -146,7 +129,7 @@ export default function HomePage() {
       setStep("complete");
       
     } catch (error) {
-      console.error("❌ Dream generation failed:", error);
+      console.error("Dream generation failed:", error);
       setShowRetry(true);
       alert("Failed to generate dream. Please try again.");
     }

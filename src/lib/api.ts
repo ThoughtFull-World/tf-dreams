@@ -60,8 +60,6 @@ export async function processDream(audioBlob: Blob): Promise<{
   const audioBase64 = await blobToBase64(audioBlob);
   const audioMimeType = audioBlob.type || "audio/webm";
 
-  console.log("📤 Sending audio to process-dream function...");
-
   const response = await fetch(`${supabaseUrl}/functions/v1/process-dream`, {
     method: "POST",
     headers: {
@@ -81,8 +79,6 @@ export async function processDream(audioBlob: Blob): Promise<{
   }
 
   const data = await response.json();
-  
-  console.log("✅ Dream processed successfully:", data);
 
   return {
     dreamId: data.dreamId,
@@ -105,8 +101,6 @@ export async function generateVideo(storyNodeId: string): Promise<{
     throw new Error("Not authenticated");
   }
 
-  console.log("🎥 Triggering video generation for story node:", storyNodeId);
-
   const response = await fetch(`${supabaseUrl}/functions/v1/generate-video`, {
     method: "POST",
     headers: {
@@ -124,7 +118,6 @@ export async function generateVideo(storyNodeId: string): Promise<{
   }
 
   const data = await response.json();
-  console.log("✅ Video generation triggered:", data);
   
   return {
     success: data.success,
@@ -187,17 +180,15 @@ export async function pollForVideo(
       const result = await checkVideoStatus(storyNodeId);
       
       if (result.status === "ready" && result.videoUrl) {
-        console.log("✅ Video ready:", result.videoUrl);
         return result.videoUrl;
       }
       
       if (result.status === "not_found") {
-        console.error("❌ Story node not found");
+        console.error("Story node not found");
         return null;
       }
       
       // Still pending, wait and retry
-      console.log(`⏳ Video still generating... (${secondsElapsed}s elapsed)`);
       await new Promise((resolve) => setTimeout(resolve, 5000));
       
     } catch (error) {
@@ -206,7 +197,7 @@ export async function pollForVideo(
     }
   }
 
-  console.warn("⚠️ Video generation timeout (2 minutes)");
+  console.warn("Video generation timeout (2 minutes)");
   return null;
 }
 
@@ -231,7 +222,7 @@ export async function uploadAudioAndCreateDream(file: Blob): Promise<Dream> {
  * @deprecated Processing is now done automatically in processDream
  */
 export async function startPipeline(dreamId: string): Promise<void> {
-  console.log(`Pipeline already started for dream: ${dreamId}`);
+  // Pipeline already started for dream
 }
 
 /**
@@ -242,7 +233,6 @@ export async function getRandomVideo(): Promise<string | null> {
     // Add cache buster to ensure fresh video on each call
     const cacheBuster = `t=${Date.now()}`;
     const url = `${supabaseUrl}/functions/v1/get-random-video?${cacheBuster}`;
-    console.log("🌐 Calling get-random-video:", url);
     
     const response = await fetch(url, {
       headers: {
@@ -252,18 +242,15 @@ export async function getRandomVideo(): Promise<string | null> {
       cache: "no-store",
     });
 
-    console.log("📡 Response status:", response.status);
-
     if (!response.ok) {
-      console.error("❌ Failed to fetch random video, status:", response.status);
+      console.error("Failed to fetch random video, status:", response.status);
       return null;
     }
 
     const data = await response.json();
-    console.log("📦 Response data:", data);
     return data.video_url || null;
   } catch (error) {
-    console.error("❌ Error fetching random video:", error);
+    console.error("Error fetching random video:", error);
     return null;
   }
 }

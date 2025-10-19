@@ -14,6 +14,7 @@ ThoughtFull Dreams is an innovative web application that turns your dream record
 
 - 🎤 **Voice Recording**: Speak your dreams naturally (up to 60 seconds)
 - 🤖 **AI Story Generation**: Transform voice into coherent narratives using OpenAI GPT-4
+- 🧠 **Memory-Aware**: Mem0 recalls your past dreams for personalized storytelling
 - 🎬 **Video Creation**: Generate stunning videos with Fal.ai
 - 📚 **Dream Library**: Access all your past dreams with magic link authentication
 - 🔗 **Social Sharing**: Share your dream videos with a unique link
@@ -34,6 +35,7 @@ ThoughtFull Dreams is an innovative web application that turns your dream record
 - ElevenLabs API key
 - OpenAI API key
 - Fal.ai API key
+- Mem0 API key
 
 ### Installation
 
@@ -127,6 +129,7 @@ tf-dreams/
 - **Edge Functions** - Serverless Deno functions
 - **Cloudflare R2** - Video & audio storage
 - **ElevenLabs** - Speech-to-text transcription
+- **Mem0** - Personal memory & context retrieval
 - **OpenAI GPT-4** - Story generation
 - **Fal.ai** - Video generation
 
@@ -192,13 +195,15 @@ See [`docs/setup/MAGIC_LINK_SETUP.md`](./docs/setup/MAGIC_LINK_SETUP.md) for con
    ↓
 2. 📝 Transcribe with ElevenLabs
    ↓
-3. 🤖 Generate Story with OpenAI GPT-4
+3. 🧠 Retrieve Context with Mem0
    ↓
-4. 🎬 Create Video with Fal.ai
+4. 🤖 Generate Story with OpenAI GPT-4
    ↓
-5. ☁️ Store in Cloudflare R2
+5. 🎬 Create Video with Fal.ai
    ↓
-6. ✅ Ready to view & share
+6. ☁️ Store in Cloudflare R2
+   ↓
+7. ✅ Ready to view & share
 ```
 
 ---
@@ -214,6 +219,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 ### Supabase Edge Functions
 ```env
 ELEVENLABS_API_KEY=...
+MEM0_API_KEY=...
 OPENAI_API_KEY=sk-...
 FAL_API_KEY=...
 R2_ENDPOINT=https://...
@@ -251,6 +257,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Fal.ai** - For stunning video generation
 - **OpenAI** - For GPT-4 storytelling
 - **ElevenLabs** - For audio transcription
+- **Mem0** - For personal memory & context
 
 ---
 
